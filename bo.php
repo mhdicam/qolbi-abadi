@@ -22,6 +22,120 @@
     <?php $jmlPenjualan += $row['barang_qty']; ?>
   <?php endforeach; ?>
 
+  <?php
+    function hitungPendapatan($cabang, $bulan, $tahun){
+      global $conn;
+      $pendapatan_invoice = 0;
+      $query_pendapatan = mysqli_query($conn, "SELECT SUM(invoice_total) AS total_pendapatan FROM invoice WHERE invoice_cabang = '". $cabang ."' AND invoice_piutang = 0 AND invoice_piutang_lunas = 0 AND MONTH(invoice_date) = '".$bulan."' AND YEAR(invoice_date) = '".$tahun."'");
+      while($pendapatan = mysqli_fetch_array($query_pendapatan)){
+        $pendapatan_invoice = $pendapatan['total_pendapatan'];
+      }
+
+      $total_piutang = 0;
+      $piutang = mysqli_query($conn, "SELECT piutang.piutang_nominal, piutang.piutang_cabang FROM piutang WHERE piutang_cabang = '".$cabang."' AND MONTH(piutang_date) = '".$bulan. "' AND YEAR(piutang_date) = '".$tahun. "'");
+      while ($row_piutang = mysqli_fetch_array($piutang)) {
+        $total_piutang += $row_piutang['piutang_nominal'];
+      }
+
+      $total_piutang_kembalian = 0;
+      $piutang_kembalian = mysqli_query($conn, "SELECT piutang_kembalian.pl_id, piutang_kembalian.pl_date, piutang_kembalian.pl_nominal, piutang_kembalian.pl_cabang FROM piutang_kembalian WHERE pl_cabang = '".$cabang."' AND MONTH(pl_date) = '".$bulan. "' AND YEAR(pl_date) = '".$tahun. "'");
+      while ($row_piutang_kembalian = mysqli_fetch_array($piutang_kembalian)) {
+        $total_piutang_kembalian += $row_piutang_kembalian['pl_nominal'];
+      }
+
+      $piutang = $total_piutang - $total_piutang_kembalian;
+      
+      $laba_pendapatan_lain = 0;
+      $laba_bersih = mysqli_query($conn, "SELECT lb_pendapatan_lain FROM laba_bersih WHERE lb_cabang = '".$cabang."' AND MONTH(tanggal)='".$bulan."' AND YEAR(tanggal)='".$tahun."'");
+      while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
+        $laba_pendapatan_lain += $row_laba_bersih['lb_pendapatan_lain'];
+      }
+
+      $total_pendapatan = $pendapatan_invoice + $piutang + $laba_pendapatan_lain;
+      return $total_pendapatan;
+    }
+
+    function hitungPengeluaran($cabang, $bulan, $tahun){
+      global $conn;
+      $lb_pengeluaran_gaji = 0;
+      $lb_pengeluaran_listrik = 0;
+      $lb_pengeluaran_tlpn_internet = 0;
+      $lb_pengeluaran_perlengkapan_toko = 0;
+      $lb_pengeluaran_biaya_penyusutan = 0;
+      $lb_pengeluaran_bensin = 0;
+      $lb_pengeluaran_tak_terduga = 0;
+      $lb_pengeluaran_lain = 0;
+
+      $laba_bersih = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = '".$cabang."' AND MONTH(tanggal)='".$bulan."' AND YEAR(tanggal)='".$tahun."'");
+      while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
+        $lb_pengeluaran_gaji                += $row_laba_bersih['lb_pengeluaran_gaji'];
+        $lb_pengeluaran_listrik             += $row_laba_bersih['lb_pengeluaran_listrik'];
+        $lb_pengeluaran_tlpn_internet       += $row_laba_bersih['lb_pengeluaran_tlpn_internet'];
+        $lb_pengeluaran_perlengkapan_toko   += $row_laba_bersih['lb_pengeluaran_perlengkapan_toko']; 
+        $lb_pengeluaran_biaya_penyusutan    += $row_laba_bersih['lb_pengeluaran_biaya_penyusutan'];
+        $lb_pengeluaran_bensin              += $row_laba_bersih['lb_pengeluaran_bensin'];
+        $lb_pengeluaran_tak_terduga         += $row_laba_bersih['lb_pengeluaran_tak_terduga'];
+        $lb_pengeluaran_lain                += $row_laba_bersih['lb_pengeluaran_lain']; 
+      }
+      
+      $total_hutang = 0;
+      $q_hutang = $conn->query("SELECT hutang.hutang_nominal, hutang.hutang_cabang FROM hutang WHERE hutang_cabang = '".$cabang."' AND MONTH(hutang_date)='".$bulan."' AND YEAR(hutang_date)='".$tahun."'");
+      while ($row_hutang = mysqli_fetch_array($q_hutang)) {
+        $total_hutang += $row_hutang['hutang_nominal'];
+      }
+
+      $total_hutang_kembalian = 0;
+      $q_hutang_kembalian = $conn->query("SELECT hutang_kembalian.hl_nominal, hutang_kembalian.hl_cabang FROM hutang_kembalian WHERE hl_cabang = '".$cabang."' AND MONTH(hl_date)='".$bulan."' AND YEAR(hl_date)='".$tahun."'");
+      while ($row_hutang_kembalian = mysqli_fetch_array($q_hutang_kembalian)) {
+        $total_hutang_kembalian += $row_hutang_kembalian['hl_nominal'];
+      }
+
+      $hutang = $total_hutang - $total_hutang_kembalian;
+      $total_pengeluaran = $lb_pengeluaran_gaji + $lb_pengeluaran_listrik + $lb_pengeluaran_tlpn_internet + $lb_pengeluaran_perlengkapan_toko + $lb_pengeluaran_biaya_penyusutan + $lb_pengeluaran_bensin + $lb_pengeluaran_tak_terduga + $lb_pengeluaran_lain + $hutang;
+
+      return $total_pengeluaran;
+    }
+
+    $dataset_pemasukan = [];
+
+    $query_toko = $sessionCabang == 0 ? "SELECT toko_nama, toko_cabang FROM toko" : "SELECT toko_nama, toko_cabang FROM toko WHERE toko_cabang=$sessionCabang";
+    $q_toko = mysqli_query($conn, $query_toko);
+    while($toko = mysqli_fetch_array($q_toko)){
+      $arr_pemasukan_value = [];
+      for($i = 1; $i < 13; $i++){
+        $i = str_pad($i, 2, '0', STR_PAD_LEFT);
+        $arr_pemasukan_value[] = hitungPendapatan($toko['toko_cabang'], $i, date('Y'));
+      }
+
+      $dataset_pemasukan[] = [
+        'label' => $toko['toko_nama'],
+        'data' => $arr_pemasukan_value,
+        'fill' => false,
+        'backgroundColor' => 'rgb(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ')',
+        'tension' => 0.1
+      ];
+    }
+
+    $dataset_pengeluaran = [];
+    $q_toko = mysqli_query($conn, $query_toko);
+    while($toko = mysqli_fetch_array($q_toko)){
+      $arr_pengeluaran_value = [];
+      for($i = 1; $i < 13; $i++){
+        $i = str_pad($i, 2, '0', STR_PAD_LEFT);
+        $arr_pengeluaran_value[] = hitungPengeluaran($toko['toko_cabang'], $i, date('Y'));
+      }
+
+      $dataset_pengeluaran[] = [
+        'label' => $toko['toko_nama'],
+        'data' => $arr_pengeluaran_value,
+        'fill' => false,
+        'backgroundColor' => 'rgb(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ')',
+        'tension' => 0.1
+      ];
+    }
+
+  ?>
+
 
   <!-- Total penjualan Nominal hari ini -->
   <?php  
@@ -159,6 +273,155 @@
     <section class="table-informasi">
       <div class="container">
         <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><b>Chart Pemasukan</b> <?= $sessionCabang == 0 ? 'Percabang' : '' ?></h3>
+              </div>
+              <div class="card-body">
+                <canvas id="pemasukan-chart" height="100"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><b>Chart Pengeluaran</b> <?= $sessionCabang == 0 ? 'Percabang' : '' ?></h3>
+              </div>
+              <div class="card-body">
+                <canvas id="pengeluaran-chart" height="100"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><b>Data Pemasukan</b> <?= $sessionCabang == 0 ? 'Percabang' : '' ?></h3>
+                </div>
+                <div class="card-body">
+                  <div class="table-auto">
+                    <table id="" class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th>No.</th>
+                          <th>Cabang</th>
+                          <th>Pemasukan</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                          $no = 1;
+                          $query_pendapatan = $sessionCabang == 0 ? "SELECT toko_nama, toko_cabang, (SELECT SUM(invoice_total) AS total_pendapatan FROM invoice WHERE invoice_cabang = toko_cabang AND invoice_piutang = 0 AND invoice_piutang_lunas = 0 AND MONTH(invoice_date) = '". date('m'). "' AND YEAR(invoice_date) = '". date('Y'). "') AS total_pendapatan FROM toko" : "SELECT toko_nama, toko_cabang, (SELECT SUM(invoice_total) AS total_pendapatan FROM invoice WHERE invoice_cabang = toko_cabang AND invoice_piutang = 0 AND invoice_piutang_lunas = 0 AND MONTH(invoice_date) = '". date('m'). "' AND YEAR(invoice_date) = '". date('Y'). "') AS total_pendapatan FROM toko WHERE toko_cabang=$sessionCabang";
+                          $q_pendapatan = mysqli_query($conn, $query_pendapatan);
+                          while($pendapatan = mysqli_fetch_array($q_pendapatan)):
+                            $pendapatan_invoice = $pendapatan['total_pendapatan'];
+
+                            $total_piutang = 0;
+                            $piutang = mysqli_query($conn, "SELECT piutang.piutang_id, piutang.piutang_date, piutang.piutang_nominal, piutang.piutang_cabang FROM piutang WHERE piutang_cabang = '".$pendapatan['toko_cabang']."' AND MONTH(piutang_date) = '". date('m'). "' AND YEAR(piutang_date) = '". date('Y'). "'");
+                            while ($row_piutang = mysqli_fetch_array($piutang)) {
+                              $total_piutang += $row_piutang['piutang_nominal'];
+                            }
+
+                            $total_piutang_kembalian = 0;
+                            $piutang_kembalian = mysqli_query($conn, "SELECT piutang_kembalian.pl_id, piutang_kembalian.pl_date, piutang_kembalian.pl_nominal, piutang_kembalian.pl_cabang FROM piutang_kembalian WHERE pl_cabang = '".$pendapatan['toko_cabang']."' AND MONTH(pl_date) = '". date('m'). "' AND YEAR(pl_date) = '". date('Y'). "'");
+                            while ($row_piutang_kembalian = mysqli_fetch_array($piutang_kembalian)) {
+                              $total_piutang_kembalian += $row_piutang_kembalian['pl_nominal'];
+                            }
+
+                            $piutang = $total_piutang - $total_piutang_kembalian;
+                            
+                            $laba_pendapatan_lain = 0;
+                            $laba_bersih = mysqli_query($conn, "SELECT lb_pendapatan_lain FROM laba_bersih WHERE lb_cabang = '".$pendapatan['toko_cabang']."' AND MONTH(tanggal) = '". date('m'). "' AND YEAR(tanggal) = '". date('Y'). "'");
+                            while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
+                              $laba_pendapatan_lain += $row_laba_bersih['lb_pendapatan_lain'];
+                            }
+
+                            $total_pendapatan = $pendapatan_invoice + $piutang + $laba_pendapatan_lain;
+                        ?>
+                            <tr>
+                              <td><?= $no++ ?></td>
+                              <td><?= $pendapatan['toko_nama'] ?></td>
+                              <td><?= number_format($total_pendapatan) ?></td>
+                            </tr>
+                        <?php endwhile ?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title"><b>Data Pengeluaran</b> <?= $sessionCabang == 0 ? 'Percabang' : '' ?></h3>
+                </div>
+                <div class="card-body">
+                  <div class="table-auto">
+                    <table id="" class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th>No.</th>
+                          <th>Cabang</th>
+                          <th>Pengeluaran</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                          $no = 1;
+                          $q_toko = mysqli_query($conn, $query_toko);
+                          while($toko = mysqli_fetch_array($q_toko)):
+                            $lb_pengeluaran_gaji = 0;
+                            $lb_pengeluaran_listrik = 0;
+                            $lb_pengeluaran_tlpn_internet = 0;
+                            $lb_pengeluaran_perlengkapan_toko = 0;
+                            $lb_pengeluaran_biaya_penyusutan = 0;
+                            $lb_pengeluaran_bensin = 0;
+                            $lb_pengeluaran_tak_terduga = 0;
+                            $lb_pengeluaran_lain = 0;
+
+                            $laba_bersih = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = '".$toko['toko_cabang']."' AND MONTH(tanggal) = '". date('m'). "' AND YEAR(tanggal) = '". date('Y'). "'");
+                            while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
+                              $lb_pengeluaran_gaji                += $row_laba_bersih['lb_pengeluaran_gaji'];
+                              $lb_pengeluaran_listrik             += $row_laba_bersih['lb_pengeluaran_listrik'];
+                              $lb_pengeluaran_tlpn_internet       += $row_laba_bersih['lb_pengeluaran_tlpn_internet'];
+                              $lb_pengeluaran_perlengkapan_toko   += $row_laba_bersih['lb_pengeluaran_perlengkapan_toko']; 
+                              $lb_pengeluaran_biaya_penyusutan    += $row_laba_bersih['lb_pengeluaran_biaya_penyusutan'];
+                              $lb_pengeluaran_bensin              += $row_laba_bersih['lb_pengeluaran_bensin'];
+                              $lb_pengeluaran_tak_terduga         += $row_laba_bersih['lb_pengeluaran_tak_terduga'];
+                              $lb_pengeluaran_lain                += $row_laba_bersih['lb_pengeluaran_lain']; 
+                            }
+                            
+                            $total_hutang = 0;
+                            $q_hutang = $conn->query("SELECT hutang.hutang_nominal, hutang.hutang_cabang FROM hutang WHERE hutang_cabang = '".$toko['toko_cabang']."' AND MONTH(hutang_date)='".date('m')."' AND YEAR(hutang_date)='".date('Y')."'");
+                            while ($row_hutang = mysqli_fetch_array($q_hutang)) {
+                              $total_hutang += $row_hutang['hutang_nominal'];
+                            }
+
+                            $total_hutang_kembalian = 0;
+                            $q_hutang_kembalian = $conn->query("SELECT hutang_kembalian.hl_nominal, hutang_kembalian.hl_cabang FROM hutang_kembalian WHERE hl_cabang = '".$toko['toko_cabang']."' AND MONTH(hl_date)='".date('m')."' AND YEAR(hl_date)='".date('Y')."'");
+                            while ($row_hutang_kembalian = mysqli_fetch_array($q_hutang_kembalian)) {
+                              $total_hutang_kembalian += $row_hutang_kembalian['hl_nominal'];
+                            }
+
+                            $hutang = $total_hutang - $total_hutang_kembalian;
+                            $total_pengeluaran = $lb_pengeluaran_gaji + $lb_pengeluaran_listrik + $lb_pengeluaran_tlpn_internet + $lb_pengeluaran_perlengkapan_toko + $lb_pengeluaran_biaya_penyusutan + $lb_pengeluaran_bensin + $lb_pengeluaran_tak_terduga + $lb_pengeluaran_lain + $hutang;
+                        ?>
+                            <tr>
+                              <td><?= $no++ ?></td>
+                              <td><?= $toko['toko_nama'] ?></td>
+                              <td><?= number_format($total_pengeluaran) ?></td>
+                            </tr>
+                        <?php endwhile ?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+          </div>
+
           <div class="col-lg-6">
              <div class="card">
                 <div class="card-header">
@@ -480,9 +743,87 @@
 <!-- DataTables -->
 <script src="plugins/datatables/jquery.dataTables.js"></script>
 <script src="plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.min.js" integrity="sha512-mlz/Fs1VtBou2TrUkGzX4VoGvybkD9nkeXWJm3rle0DPHssYYx4j+8kIS15T78ttGfmOjH0lLaBXGcShaVkdkg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
   $(function () {
     $("#example1").DataTable();
     $("#example2").DataTable();
+
+    const ctxPemasukan = document.getElementById('pemasukan-chart');
+    const ctxPengeluaran = document.getElementById('pengeluaran-chart');
+    const dataPemasukan = {
+                    labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    datasets: <?= trim(json_encode($dataset_pemasukan), '"') ?>
+                };
+    const dataPengeluaran = {
+                    labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    datasets: <?= trim(json_encode($dataset_pengeluaran), '"') ?>
+                };
+
+    const pemasukanChart = new Chart(ctxPemasukan, {
+                          type: 'bar',
+                          data: dataPemasukan,
+                          options: {
+                            responsive: true,
+                            plugins: {
+                              legend: {
+                                position: 'top',
+                              },
+                              title: {
+                                display: true,
+                                text: 'Chart Pemasukan'
+                              }
+                            },
+                            locale: 'en-IN',
+                            scales: {
+                              yAxes: [{
+                                  display: true,
+                                  ticks: {
+                                      beginAtZero: true,
+                                      callback: function(value, index, values) {
+                                        if(parseInt(value) >= 1000){
+                                          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                        } else {
+                                          return value;
+                                        }
+                                      }
+                                  }
+                              }]
+                            }
+                          }
+                        });
+
+    const pengeluaranChart = new Chart(ctxPengeluaran, {
+                          type: 'bar',
+                          data: dataPengeluaran,
+                          options: {
+                            responsive: true,
+                            plugins: {
+                              legend: {
+                                position: 'top',
+                              },
+                              title: {
+                                display: true,
+                                text: 'Chart Pengeluaran'
+                              }
+                            },
+                            locale: 'en-IN',
+                            scales: {
+                              yAxes: [{
+                                  display: true,
+                                  ticks: {
+                                      beginAtZero: true,
+                                      callback: function(value, index, values) {
+                                        if(parseInt(value) >= 1000){
+                                          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                        } else {
+                                          return value;
+                                        }
+                                      }
+                                  }
+                              }]
+                            }
+                          }
+                        });
   });
 </script>

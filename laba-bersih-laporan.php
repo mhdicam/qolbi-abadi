@@ -31,7 +31,7 @@
         </div><br>
         <div class="callout callout-info">
           <h5><i class="fas fa-info"></i> Note:</h5>
-          Pastikan Anda sudah mengisi Data Operasional Pemasukan & Pengeluaran toko. Jika belum silahkan lengkapi <a href="laba-bersih-data" style="color: #007bff;"><b>disini</b></a>.
+          Pastikan Anda sudah mengisi Data Operasional Pemasukan & Pengeluaran toko. Jika belum silahkan lengkapi <a href="incomes-expenses" style="color: #007bff;"><b>disini</b></a>.
         </div>
       </div><!-- /.container-fluid -->
     </section>

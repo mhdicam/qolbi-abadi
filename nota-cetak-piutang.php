@@ -56,6 +56,9 @@
 <?php  
     $customer = $invoice['invoice_customer'];
     $dataCustomer = query("SELECT * FROM customer WHERE customer_id = $customer");
+    $ctrId     = '-'; 
+    $ctrNama   = '-'; 
+    $ctrAlmt   = '-'; 
 ?>
 <?php foreach ( $dataCustomer as $ctr ) : ?>
     <?php 

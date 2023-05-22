@@ -1,4 +1,5 @@
 <?php 
+  ob_start();
   include '_header.php';
   include '_nav.php';
   include '_sidebar.php'; 
@@ -51,7 +52,7 @@
               <div class="row">
                 <div class="col-12">
                   <h4>
-                    <i class="fas fa-globe"></i> N0. Invoice: <?= $noInvoice; ?>
+                    <i class="fas fa-globe"></i> NO. Invoice: <?= $noInvoice; ?>
                     <small class="float-right">Tanggal: <?= $invoice['invoice_tgl']; ?></small>
                   </h4>
                 </div>

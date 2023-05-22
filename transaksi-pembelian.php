@@ -83,18 +83,29 @@ if( isset($_POST["updateStock"]) ){
 
   if( $hasilquery == 0){
       // cek apakah data berhasil di tambahkan atau tidak
-      if( updateStockPembelian($_POST) > 0 ) {
+      $total_keranjang = mysqli_num_rows(mysqli_query($conn, "SELECT keranjang_id FROM keranjang_pembelian WHERE keranjang_id_kasir = '" . $_SESSION['user_id'] . "' AND keranjang_cabang='" . $sessionCabang . "'"));
+
+      if($total_keranjang == 0){
         echo "
           <script>
-            document.location.href = 'invoice-pembelian?no=".$inv."';
+            alert('Keranjang masih kosong');
           </script>
         ";
       } else {
-        echo "
-          <script>
-            alert('Transaksi Gagal');
-          </script>
-        ";
+        $simpanPembelian = updateStockPembelian($_POST);
+        if( $simpanPembelian['success'] > 0 ) {
+          echo "
+            <script>
+              document.location.href = 'invoice-pembelian?no=".$simpanPembelian['data']['invoice']."';
+            </script>
+          ";
+        } else {
+          echo "
+            <script>
+              alert('Transaksi Gagal');
+            </script>
+          ";
+        }
       }
   } else {
     echo "
@@ -146,25 +157,19 @@ if( isset($_POST["updateStock"]) ){
     <?php  
       $keranjang = query("SELECT * FROM keranjang_pembelian ORDER BY keranjang_id ASC");
 
-      $pembelian = mysqli_query($conn,"select * from invoice_pembelian");
-      $jmlPembelian = mysqli_num_rows($pembelian);
-      $jmlPembelian1 = $jmlPembelian + 1;
+      // $pembelian = mysqli_query($conn,"select * from invoice_pembelian");
+      // $jmlPembelian = mysqli_num_rows($pembelian);
+      // $jmlPembelian1 = $jmlPembelian + 1;
     ?>
     <?php  
-        $today = date("Ymd");
-        $di = $today.$jmlPembelian1;
+        // $today = date("Ymd");
+        // $di = $today.$jmlPembelian1;
     ?>
     <section class="content">
-
         <div class="col-lg-12">
-
-        	
-
             <!-- /.card-header -->
               <span id="transaksi-pembelian-keranjang"></span>
             <!-- /.card-body -->
-
-
         </div>
         <!-- /.col -->
       </div>
@@ -232,7 +237,7 @@ if( isset($_POST["updateStock"]) ){
               <input type="text" class="form-control" id="invoice_pembelian_number_input" name="invoice_pembelian_number_input" required="">
             </div>  
 
-            <input type="hidden" name="invoice_pembelian_number_parent" value="<?= $di; ?>">    
+            <!-- <input type="hidden" name="invoice_pembelian_number_parent" value="<?= $di; ?>">     -->
             <input type="hidden" name="invoice_pembelian_number_user" value="<?= $_SESSION['user_id']; ?>">    
             <input type="hidden" name="invoice_pembelian_cabang" value="<?= $sessionCabang; ?>">
           </div>

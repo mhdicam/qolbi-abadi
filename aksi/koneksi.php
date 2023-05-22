@@ -2,7 +2,7 @@
 	$servername = "localhost";
 	$username = "root";
 	$password = "";
-	$db = "pos_ice";
+	$db = "pos";
 
 	$conn = new mysqli($servername, $username, $password, $db);
 	date_default_timezone_set('Asia/Jakarta');

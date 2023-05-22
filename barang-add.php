@@ -139,9 +139,8 @@ if( isset($_POST["submit"]) ){
                               <label for="barang_option_sn">Non-SN or SN</label>
                               <div class="">
                                   <select name="barang_option_sn" required="" id="barang_option_sn" class="form-control stock-pilihan" onchange="myFunction()">
-                                      <option value="">-- Pilih --</option>
-                                          <option value="0">Non-SN</option>
-                                          <option value="1">SN</option>
+                                      <option value="0">Non-SN</option>
+                                      <option value="1">SN</option>
                                     </select>
                                 </div>
                                 <small style="color: red">
@@ -153,6 +152,10 @@ if( isset($_POST["submit"]) ){
                           <div class="form-group">
                             <label for="barang_stock">Stock</label>
                             <input type="number" name="barang_stock" class="form-control" id="barang_stock" placeholder="Input Jumlah Stock" value="0" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="barang_harga_beli">Harga Beli</label>
+                            <input type="number" name="barang_harga_beli" class="form-control" id="barang_harga_beli" placeholder="Input Harga Beli" value="0" required>
                           </div>
                       </div>
                     </div>

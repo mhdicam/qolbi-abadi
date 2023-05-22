@@ -97,6 +97,12 @@
                   	<?php  
                     	$customer = $invoice['invoice_customer'];
                     	$dataCustomer = query("SELECT * FROM customer WHERE customer_id = $customer");
+                      $ctrId = '-';
+                      $ctrNama = '-';
+                      $ctrAlamat = '-';
+                      $ctrEmail = '-';
+                      $ctrTlpn = '-';
+                      $ctrCategory = '-';
                     ?>
                     <?php foreach ( $dataCustomer as $ctr ) : ?>
                       <?php 

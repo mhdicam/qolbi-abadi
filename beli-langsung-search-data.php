@@ -34,7 +34,8 @@ require 'aksi/ssp.php';
 
 // Output data as json format 
 echo json_encode( 
-    SSP::simple( $_GET, $dbDetails, $table, $primaryKey, $columns, null, "barang_stock > 0 && barang_harga > 0 && barang_stock >= satuan_isi_1 && barang_cabang = $cabang " )
+    // SSP::simple( $_GET, $dbDetails, $table, $primaryKey, $columns, null, "barang_stock > 0 && barang_harga > 0 && barang_stock >= satuan_isi_1 && barang_cabang = $cabang " )
+    SSP::simple( $_GET, $dbDetails, $table, $primaryKey, $columns, null, "barang_stock > 0 && barang_harga > 0 && barang_stock >= 0 && barang_cabang = $cabang " )
     // SSP::simple( $_GET, $dbDetails, $table, $primaryKey, $columns)
 
 );

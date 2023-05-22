@@ -7,7 +7,8 @@
 
 <?php  
   $userId = $_SESSION['user_id'];
-  $tipeHarga = base64_decode($_GET['customer']);
+  // $tipeHarga = base64_decode($_GET['customer']);
+  $tipeHarga = isset($_GET['customer_category']) ? base64_decode($_GET['customer_category']) : 0;
   $invoiceDraft = base64_decode($_GET['invoice']);
 
   $invoiceDataDraft = query("SELECT * FROM invoice WHERE penjualan_invoice = $invoiceDraft && invoice_cabang = $sessionCabang")[0];
@@ -19,13 +20,13 @@
     ";
   }
 
-  if ( $tipeHarga == 1 ) {
-      $nameTipeHarga = "Grosir";
-  } elseif ( $tipeHarga == 2 ) {
-      $nameTipeHarga = "KH";
-  } else {
-      $nameTipeHarga = "Umum";
-  }
+  // if ( $tipeHarga == 1 ) {
+  //     $nameTipeHarga = "Grosir";
+  // } elseif ( $tipeHarga == 2 ) {
+  //     $nameTipeHarga = "KH";
+  // } else {
+  //     $nameTipeHarga = "Umum";
+  // }
 
   if ( $levelLogin === "kurir") {
     echo "
@@ -133,7 +134,7 @@ if( isset($_POST["updateStock"]) ){
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-8">
-            <h1>Transaksi Kasir <b style="color: #007bff; ">Customer <?= $nameTipeHarga; ?></b></h1>
+            <h1>Transaksi Kasir</h1>
             <div class="btn-cash-piutang">
               <?php  
                 // Ambil data dari URL Untuk memberikan kondisi transaksi Cash atau Piutang
@@ -197,7 +198,7 @@ if( isset($_POST["updateStock"]) ){
                                   ?> 
                               </td>
                               <td class="orderan-online-button">
-                                <a href="beli-langsung-draft?customer=<?= base64_encode($row['invoice_customer_category']); ?>&r=<?= base64_encode($row['invoice_piutang']); ?>&invoice=<?= base64_encode($row['penjualan_invoice']); ?>" title="Edit Data">
+                                <a href="beli-langsung-draft?customer=<?= base64_encode($row['invoice_customer']) ?>&customer_category=<?= base64_encode($row['invoice_customer_category']); ?>&r=<?= base64_encode($row['invoice_piutang']); ?>&invoice=<?= base64_encode($row['penjualan_invoice']); ?>" title="Edit Data">
                                       <button class="btn btn-primary" type="submit">
                                          <i class="fa fa-edit"></i>
                                       </button>
@@ -379,6 +380,10 @@ if( isset($_POST["updateStock"]) ){
                     <div class="col-md-6 col-lg-7">
                         <div class="filter-customer">
                           <div class="form-group">
+                              <label>Tanggal</label>
+                              <input type="date" value="<?= date('Y-m-d') ?>" class="form-control" required name="tanggal">
+                          </div>
+                          <div class="form-group">
                             <label>Customer <b style="color: #007bff; "><?= $nameTipeHarga; ?></b></label>
                             <?php  
                               $idCustomerDraft = $invoiceDataDraft['invoice_customer'];
@@ -387,22 +392,17 @@ if( isset($_POST["updateStock"]) ){
                               $invoice_customer = $namaCustomer['customer_nama'];
                             ?>
                             <select class="form-control select2bs4 pilihan-marketplace" required="" name="invoice_customer">
-                              <option selected="selected" value="<?= $idCustomerDraft; ?>"><?= $invoice_customer; ?></option>
-
-                            <?php if (  $idCustomerDraft > 0 ) { ?> 
-                              <?php if ( $r != 1 && $tipeHarga < 1 ) { ?>
-                              <option value="0">Umum</option>
-                              <?php } ?>
-                            <?php } ?>
+                            <option data-id="<?= base64_encode('0') ?>" data-category="0" data-category-enc="<?= base64_encode('0') ?>" value="0" <?= $cust == 0 ? 'selected' : '' ?>>Umum</option>
 
                               <?php  
-                                $customer = query("SELECT * FROM customer WHERE customer_cabang = $sessionCabang && customer_status = 1 && customer_category = $tipeHarga ORDER BY customer_id DESC ");
+                                // $customer = query("SELECT * FROM customer WHERE customer_cabang = $sessionCabang && customer_status = 1 && customer_category = $tipeHarga ORDER BY customer_id DESC ");
+                                $customer = query("SELECT * FROM customer WHERE customer_cabang = $sessionCabang && customer_status = 1 ORDER BY customer_id DESC ");
                               ?>
                               <?php foreach ( $customer as $ctr ) : ?>
                                 <?php if ( $ctr['customer_id'] > 1 && $ctr['customer_nama'] !== "Customer Umum" ) { ?>
-                                <?php if ( $ctr['customer_id'] != $idCustomerDraft ) { ?>
-                                <option value="<?= $ctr['customer_id'] ?>"><?= $ctr['customer_nama'] ?></option>
-                                <?php } ?>
+                                    <!-- <option value="<?= $ctr['customer_id'] ?>"><?= $ctr['customer_nama'] ?></option> -->
+                                    <option data-id="<?= base64_encode($ctr['customer_id']) ?>" data-category="<?= $ctr['customer_category'] ?>" data-category-enc="<?= base64_encode($ctr['customer_category']) ?>" <?= $idCustomerDraft == $ctr['customer_id'] ? 'selected' : '' ?> value="<?= $ctr['customer_id'] ?>"><?= $ctr['customer_nama'] ?></option>
+                                  
                                 <?php } ?>
                               <?php endforeach; ?>
                             </select>

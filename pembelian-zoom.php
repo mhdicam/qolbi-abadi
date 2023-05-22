@@ -36,7 +36,7 @@
           <div class="col-12">
             <div class="callout callout-info">
               <h5><i class="fas fa-info"></i> Note:</h5>
-				      Data detail Transaksi dengan N0. Invoice: <?= $invoice['pembelian_invoice']; ?>
+				      Data detail Transaksi dengan NO. Invoice: <?= $invoice['pembelian_invoice']; ?>
             </div>
 
 
@@ -46,7 +46,7 @@
               <div class="row">
                 <div class="col-12">
                   <h4>
-                    <i class="fas fa-globe"></i> N0. Invoice: <?= $invoice['pembelian_invoice']; ?>
+                    <i class="fas fa-globe"></i> NO. Invoice: <?= $invoice['pembelian_invoice']; ?>
                     <small class="float-right">Tanggal: <?= $invoice['invoice_tgl']; ?></small>
                   </h4>
                 </div>

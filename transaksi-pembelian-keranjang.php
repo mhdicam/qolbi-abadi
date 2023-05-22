@@ -41,20 +41,20 @@
            <div class="row">
               <div class="col-md-8 col-lg-8">
                 <div class="card-invoice">
-                 <span>No. Invoice: </span>
+                  <!-- <span>No. Invoice: </span>
                   <input type="" value="<?= $in; ?>" readonly="" style="border: 1px solid #eaeaea;">
 
-                <?php if ( $in == null ) { ?>
-                  <span class="" name="" data-toggle="modal" data-target="#modal-tambah-invoice">
-                        <i class="fa fa-pencil" style="color: green; cursor: pointer;"></i>
-                  </span>
-                <?php } ?>
+                  <?php if ( $in == null ) { ?>
+                    <span class="" name="" data-toggle="modal" data-target="#modal-tambah-invoice">
+                          <i class="fa fa-pencil" style="color: green; cursor: pointer;"></i>
+                    </span>
+                  <?php } ?>
 
-                <?php if ( $in != null ) { ?>
-                  <span class="" name="" id="invoice_edit" data-id="<?= $inId; ?>">
-                        <i class="fa fa-edit" style="color: blue; cursor: pointer;"></i>
-                  </span>
-                <?php } ?>
+                  <?php if ( $in != null ) { ?>
+                    <span class="" name="" id="invoice_edit" data-id="<?= $inId; ?>">
+                          <i class="fa fa-edit" style="color: blue; cursor: pointer;"></i>
+                    </span>
+                  <?php } ?> -->
 
                  </div>
                 </div>
@@ -152,7 +152,10 @@
                   <div class="row">
                     <div class="col-md-6 col-lg-7">
                         <div class="filter-customer">
-                          
+                          <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="date" class="form-control" name="tanggal" value="<?= date('Y-m-d') ?>" required/>
+                          </div>
                           <div class="form-group">
                             <label>Supplier</label>
                             <select class="form-control select2bs4" required="" name="invoice_supplier">
@@ -246,11 +249,10 @@
                                   <input type="hidden" min="1" name="keranjang_qty[]" value="<?= $stk['keranjang_qty'] ?>"> 
                                   <input type="hidden" name="keranjang_id_kasir[]" value="<?= $_SESSION['user_id']; ?>">
 
-                                  <input type="hidden" name="kik" value="<?= $_SESSION['user_id']; ?>
-                                  ">
+                                  <!-- <input type="hidden" name="kik" value="<?= $_SESSION['user_id']; ?>"> -->
                                   <input type="hidden" name="pembelian_invoice[]" value="<?= $in; ?>">
                                   <input type="hidden" name="pembelian_invoice_parent[]" value="<?= $inDelete; ?>">
-                                  <input type="hidden" name="pembelian_date[]" value="<?= date("Y-m-d") ?>">
+                                  <!-- <input type="hidden" name="pembelian_date[]" value="<?= date("Y-m-d") ?>"> -->
                                   <input type="hidden" name="barang_harga_beli[]" value="<?= $stk['keranjang_harga']; ?>">
                                   <input type="hidden" name="pembelian_cabang[]" value="<?= $sessionCabang; ?>">
                                 <?php } ?>
@@ -260,7 +262,7 @@
                                 <input type="hidden" name="pembelian_invoice_parent2" value="<?= $inDelete; ?>">
                                 <input type="hidden" name="invoice_hutang" value="<?= $r; ?>">
                                 <input type="hidden" name="invoice_hutang_lunas" value="0">
-                                <input type="hidden" name="invoice_pembelian_cabang" value="<?= $sessionCabang; ?>">
+                                <!-- <input type="hidden" name="invoice_pembelian_cabang" value="<?= $sessionCabang; ?>"> -->
                                 <div class="payment">
                                   <?php  
                                   	 $idKasir = $_SESSION['user_id'];
@@ -268,19 +270,19 @@
     								                  $jmlKeranjang = mysqli_num_rows($keranjang);
                                   ?>
 
-                                <?php if ( $in != null ) { ?>
+                                      
                                   <?php if ( $jmlKeranjang < 1 ) { ?>
-                                  <button class="btn btn-primary" type="submit" name="updateStock">Simpan Payment <i class="fa fa-shopping-cart"></i></button>
+                                    <button class="btn btn-primary" type="submit" name="updateStock">Simpan Payment <i class="fa fa-shopping-cart"></i></button>
                                   <?php } ?>
 
                                   <?php if ( $jmlKeranjang > 0 ) { ?>
-                                  <a class="btn btn-default btn-disabled" type="" name="">Simpan Payment <i class="fa fa-shopping-cart"></i></a>
+                                    <a class="btn btn-default btn-disabled" type="" name="">Simpan Payment <i class="fa fa-shopping-cart"></i></a>
                                   <?php } ?>
-                                <?php } ?>
+                                
 
-                                <?php if ( $in == null ) { ?>
+                                <!-- <?php if ( $in == null ) { ?>
                                   <a class="btn btn-default" type="" name="" disabled>Simpan Payment <i class="fa fa-shopping-cart"></i></a>
-                                <?php } ?>
+                                <?php } ?> -->
 
                                 </div>
                               </td>

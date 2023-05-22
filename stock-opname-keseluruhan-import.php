@@ -12,8 +12,20 @@
     ";
   }
 
-  $soh_stock_opname_id = abs((int)base64_decode($_GET['id']));  
-  $stock_opname       = query("SELECT * FROM stock_opname WHERE stock_opname_id = $soh_stock_opname_id && stock_opname_cabang = $sessionCabang")[0];
+  // $soh_stock_opname_id = abs((int)base64_decode($_GET['id']));
+  // $stock_opname       = query("SELECT * FROM stock_opname WHERE stock_opname_id = $soh_stock_opname_id && stock_opname_cabang = $sessionCabang")[0];
+  $soh_stock_opname_id = isset($_GET['id']) ? abs((int)base64_decode($_GET['id'])) : '0';
+  $stock_opname_query = mysqli_query($conn, "SELECT * FROM stock_opname WHERE stock_opname_id = $soh_stock_opname_id && stock_opname_cabang = $sessionCabang");
+  $stock_opname = mysqli_fetch_assoc($stock_opname_query);
+
+  if(!$stock_opname){
+    echo "
+       <script>
+         document.location.href = 'stock-opname-keseluruhan';
+         alert('Proses Stock Opname tidak ditemukan !!');
+       </script>
+     ";
+  }
 
   // Cek Status
   if ( $stock_opname['stock_opname_status'] > 0 ) {

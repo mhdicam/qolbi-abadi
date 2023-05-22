@@ -1,25 +1,26 @@
 <?php 
-include '_header-artibut.php';
+	include '_header-artibut.php';
 
-$id 		= abs((int)base64_decode($_GET["id"]));
-$customer   = base64_decode($_GET['customer']);
-$r  		= $_GET["r"];
-// Buat Url Sesuai variabel $r
-if ( $r < 1 ) {
-	$linkBack = "beli-langsung?customer=".$_GET['customer']." ";
-} else {
-	$linkBack = "beli-langsung?customer=".$_GET['customer']."&r=".base64_encode($r);
-}
+	$id 					= abs((int)base64_decode($_GET["id"]));
+	$customer_category   	= base64_decode($_GET['customer_category']);
+	$customer   			= base64_decode($_GET['customer']);
+	$r  					= $_GET["r"];
+	// Buat Url Sesuai variabel $r
+	if ( $r < 1 ) {
+		$linkBack = "beli-langsung?customer_category=".base64_encode($customer_category)."&customer=".base64_encode($customer);
+	} else {
+		$linkBack = "beli-langsung?customer_category=".base64_encode($customer_category)."&customer=".base64_encode($customer)."&r=".base64_encode($r);
+	}
 
-if ( $id == null ) {
-	echo '
-		<script>
-			document.location.href = "beli-langsung?customer='.base64_encode($customer).'";
-		</script>
-	';
-}
+	if ( $id == null ) {
+		echo '
+			<script>
+				document.location.href = "beli-langsung?customer='.base64_encode($customer).'&customer_category='.base64_encode($customer_category).'";
+			</script>
+		';
+	}
 
-$barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang = ".$sessionCabang." ")[0];
+	$barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang = ".$sessionCabang." ")[0];
 
 	$keranjang_cabang   		= $sessionCabang;
 	$barang_id          		= $barang['barang_id'];
@@ -27,9 +28,9 @@ $barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang
 	$keranjang_nama     		= $barang['barang_nama'];
 	$keranjang_harga_beli    	= $barang['barang_harga_beli'];
 
-	if ( $customer == 1 ) {
+	if ( $customer_category == 1 ) {
 		$keranjang_harga    		= $barang['barang_harga_grosir_1'];
-	} elseif ( $customer == 2 ) {
+	} elseif ( $customer_category == 2 ) {
 		$keranjang_harga    		= $barang['barang_harga_grosir_2'];
 	} else {
 		$keranjang_harga    		= $barang['barang_harga'];
@@ -42,7 +43,7 @@ $barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang
 	$keranjang_barang_sn_id     = 0;
 	$keranjang_barang_option_sn = $barang['barang_option_sn'];
 	$keranjang_sn       		= 0;
-	$keranjang_id_cek   		= $barang_id.$keranjang_id_kasir.$keranjang_cabang;
+	$keranjang_id_cek   		= $barang_id.$keranjang_id_kasir.$keranjang_cabang.$customer_category;
 
 	// Cek apakah data barang sudah sesuai dengan jumlah stok saat Insert Ke Keranjang dan jika melebihi stok maka akan dikembalikan
 	$idBarang = mysqli_query($conn, "select keranjang_qty, keranjang_konversi_isi from keranjang where barang_id = ".$barang_id." ");
@@ -53,7 +54,7 @@ $barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang
    		echo '
 			<script>
 				alert("Produk TIDAK BISA DITAMBAHKAN Karena Jumlah QTY Melebihi Stock yang Ada di Semua Transaksi Kasir & Mohon di Cek Kembali !!!");
-				document.location.href = "beli-langsung?customer='.base64_encode($customer).'";
+				document.location.href = "beli-langsung?customer='.base64_encode($customer).'&customer_category='.base64_encode($customer_category).'";
 			</script>
 		';
    	} else {
@@ -72,7 +73,7 @@ $barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang
 			$keranjang_barang_option_sn, 
 			$keranjang_sn, 
 			$keranjang_id_cek, 
-			$customer) > 0) {
+			$customer_category) > 0) {
 			echo "
 				<script>
 					document.location.href = '".$linkBack."';

@@ -360,17 +360,18 @@ function tambahBarang($data) {
 	$kategori_id      			= $data["kategori_id"];
 
 
-	$satuan_id        			= $data["satuan_id"];
-	$satuan_id_2        		= $data["satuan_id_2"];
-	$satuan_id_3        		= $data["satuan_id_3"];
+	$satuan_id        			= $data["satuan_id"] != '' ? $data["satuan_id"] : 0;
+	$satuan_id_2        		= $data["satuan_id_2"] != '' ? $data["satuan_id_2"] : 0;
+	$satuan_id_3        		= $data["satuan_id_3"] != '' ? $data["satuan_id_3"] : 0;
 
 	$satuan_isi_1 				= 1;
-	$satuan_isi_2        		= $data["satuan_isi_2"];
-	$satuan_isi_3        		= $data["satuan_isi_3"];
+	$satuan_isi_2        		= $data["satuan_isi_2"] != '' ? $data["satuan_isi_2"] : 0;
+	$satuan_isi_3        		= $data["satuan_isi_3"] != '' ? $data["satuan_isi_3"] : 0;
 
 
 	$barang_tanggal   			= date("d F Y g:i:s a");
 	$barang_stock     			= htmlspecialchars($data["barang_stock"]);
+	$barang_harga_beli     		= htmlspecialchars($data["barang_harga_beli"]);
 	$barang_option_sn 			= $data["barang_option_sn"];
 	$barang_cabang				= $data["barang_cabang"];
 
@@ -385,8 +386,13 @@ function tambahBarang($data) {
 		";
 	} else {
 		// query insert data
-		$query = "INSERT INTO barang VALUES ('', '$barang_kode', '$barang_kode_slug', '$barang_kode_count', '$barang_nama', '','$barang_harga', '$barang_harga_grosir_1', '$barang_harga_grosir_2', '$barang_harga_s2', '$barang_harga_grosir_1_s2', '$barang_harga_grosir_2_s2', '$barang_harga_s3', '$barang_harga_grosir_1_s3', '$barang_harga_grosir_2_s3', '$barang_stock', '$barang_tanggal', '$kategori_id', '$kategori_id', '$satuan_id', '$satuan_id', '$satuan_id_2', '$satuan_id_3', '$satuan_isi_1', '$satuan_isi_2', '$satuan_isi_3', '$barang_deskripsi', '$barang_option_sn', '', '$barang_cabang')";
+		// $query = "INSERT INTO barang VALUES ('', '$barang_kode', '$barang_kode_slug', '$barang_kode_count', '$barang_nama', '$barang_harga_beli', '$barang_harga', '$barang_harga_grosir_1', '$barang_harga_grosir_2', '$barang_harga_s2', '$barang_harga_grosir_1_s2', '$barang_harga_grosir_2_s2', '$barang_harga_s3', '$barang_harga_grosir_1_s3', '$barang_harga_grosir_2_s3', '$barang_stock', '$barang_tanggal', '$kategori_id', '$kategori_id', '$satuan_id', '$satuan_id', '$satuan_id_2', '$satuan_id_3', '$satuan_isi_1', '$satuan_isi_2', '$satuan_isi_3', '$barang_deskripsi', '$barang_option_sn', '', '$barang_cabang')";
+		$query = "INSERT INTO barang (barang_kode, barang_kode_slug, barang_kode_count, barang_nama, barang_harga_beli, barang_harga, barang_harga_grosir_1, barang_harga_grosir_2, barang_harga_s2, barang_harga_grosir_1_s2, barang_harga_grosir_2_s2, barang_harga_s3, barang_harga_grosir_1_s3, barang_harga_grosir_2_s3, barang_stock, barang_tanggal, barang_kategori_id, kategori_id, barang_satuan_id, satuan_id, satuan_id_2, satuan_id_3, satuan_isi_1, satuan_isi_2, satuan_isi_3, barang_deskripsi, barang_option_sn, barang_terjual, barang_cabang)
+				  VALUES ('$barang_kode', '$barang_kode_slug', '$barang_kode_count', '$barang_nama', '$barang_harga_beli', '$barang_harga', '$barang_harga_grosir_1', '$barang_harga_grosir_2', '$barang_harga_s2', '$barang_harga_grosir_1_s2', '$barang_harga_grosir_2_s2', '$barang_harga_s3', '$barang_harga_grosir_1_s3', '$barang_harga_grosir_2_s3', '$barang_stock', '$barang_tanggal', '$kategori_id', '$kategori_id', '$satuan_id', '$satuan_id', '$satuan_id_2', '$satuan_id_3', '$satuan_isi_1', '$satuan_isi_2', '$satuan_isi_3', '$barang_deskripsi', '$barang_option_sn', 0, '$barang_cabang')";
 		mysqli_query($conn, $query);
+		
+		// echo $conn->error;
+		// die;
 
 		return mysqli_affected_rows($conn);
 	}
@@ -415,14 +421,15 @@ function editBarang($data) {
 
 	$kategori_id      			= $data["kategori_id"];
 
-	$satuan_id        			= $data["satuan_id"];
-	$satuan_id_2        		= $data["satuan_id_2"];
-	$satuan_id_3        		= $data["satuan_id_3"];
+	$satuan_id        			= $data["satuan_id"] != '' ? $data["satuan_id"] : 0;
+	$satuan_id_2        		= $data["satuan_id_2"] != '' ? $data["satuan_id_2"] : 0;
+	$satuan_id_3        		= $data["satuan_id_3"] != '' ? $data["satuan_id_3"] : 0;
 
-	$satuan_isi_2        		= $data["satuan_isi_2"];
-	$satuan_isi_3        		= $data["satuan_isi_3"];
+	$satuan_isi_2        		= $data["satuan_isi_2"] != '' ? $data["satuan_isi_2"] : 0;
+	$satuan_isi_3        		= $data["satuan_isi_3"] != '' ? $data["satuan_isi_3"] : 0;
 
 	$barang_stock     			= htmlspecialchars($data["barang_stock"]);
+	$barang_harga_beli     		= htmlspecialchars($data["barang_harga_beli"]);
 	$barang_option_sn 			= $data["barang_option_sn"];
 
 	// query update data
@@ -430,6 +437,7 @@ function editBarang($data) {
 				barang_kode       		= '$barang_kode',
 				barang_nama       		= '$barang_nama',
 				barang_harga      		= '$barang_harga',
+				barang_harga_beli      	= '$barang_harga_beli',
 				barang_harga_grosir_1   = '$barang_harga_grosir_1',
 				barang_harga_grosir_2   = '$barang_harga_grosir_2',
 				barang_harga_s2      	= '$barang_harga_s2',
@@ -450,8 +458,10 @@ function editBarang($data) {
 				barang_option_sn  		= '$barang_option_sn'
 				WHERE barang_id   		= $id
 				";
-	mysqli_query($conn, $query);
-	return mysqli_affected_rows($conn);
+	return mysqli_query($conn, $query);
+
+	// echo $conn->err_no;die;
+	// return mysqli_affected_rows($conn);
 }
 
 function hapusBarang($id) {
@@ -549,9 +559,8 @@ function tambahKeranjang($keranjang_cabang,
 	$keranjang_barang_option_sn, 
 	$keranjang_sn, 
 	$keranjang_id_cek, 
-	$customer) {
+	$customer_category) {
 	global $conn;
-
 
 	// Cek STOCK
 	$barang_id_cek = mysqli_num_rows(mysqli_query($conn, "select * from keranjang where keranjang_id_cek = '$keranjang_id_cek' "));
@@ -577,25 +586,66 @@ function tambahKeranjang($keranjang_cabang,
 
 	} else {
 		// query insert data
-		$query = "INSERT INTO keranjang VALUES ('', 
-		'$keranjang_nama', 
-		'$keranjang_harga_beli', 
-		'$keranjang_harga',
-		'$keranjang_harga', 
-		'0',
-		'$keranjang_satuan', 
-		'$barang_id', 
-		'$barang_kode_slug', 
-		'$keranjang_qty', 
-		'$keranjang_qty', 
-		'$keranjang_konversi_isi', 
-		'$keranjang_barang_sn_id', 
-		'$keranjang_barang_option_sn', 
-		'$keranjang_sn', 
-		'$keranjang_id_kasir', 
-		'$keranjang_id_cek', 
-		'$customer', 
-		'$keranjang_cabang')";
+		// $query = "INSERT INTO keranjang VALUES ('', 
+		// '$keranjang_nama', 
+		// '$keranjang_harga_beli', 
+		// '$keranjang_harga',
+		// '$keranjang_harga', 
+		// '0',
+		// '$keranjang_satuan', 
+		// '$barang_id', 
+		// '$barang_kode_slug', 
+		// '$keranjang_qty', 
+		// '$keranjang_qty', 
+		// '$keranjang_konversi_isi', 
+		// '$keranjang_barang_sn_id', 
+		// '$keranjang_barang_option_sn', 
+		// '$keranjang_sn', 
+		// '$keranjang_id_kasir', 
+		// '$keranjang_id_cek', 
+		// '$customer', 
+		// '$keranjang_cabang')";
+
+		$query = "INSERT INTO keranjang(
+			keranjang_nama,
+			keranjang_harga_beli,
+			keranjang_harga,
+			keranjang_harga_parent,
+			keranjang_harga_edit,
+			keranjang_satuan,
+			barang_id,
+			barang_kode_slug,
+			keranjang_qty,
+			keranjang_qty_view,
+			keranjang_konversi_isi,
+			keranjang_barang_sn_id,
+			keranjang_barang_option_sn,
+			keranjang_sn,
+			keranjang_id_kasir,
+			keranjang_id_cek,
+			keranjang_tipe_customer,
+			keranjang_cabang)
+			VALUES
+			(
+			'$keranjang_nama', 
+			'$keranjang_harga_beli', 
+			'$keranjang_harga',
+			'$keranjang_harga', 
+			'0',
+			'$keranjang_satuan', 
+			'$barang_id', 
+			'$barang_kode_slug', 
+			'$keranjang_qty', 
+			'$keranjang_qty', 
+			'$keranjang_konversi_isi', 
+			'$keranjang_barang_sn_id', 
+			'$keranjang_barang_option_sn', 
+			'$keranjang_sn', 
+			'$keranjang_id_kasir', 
+			'$keranjang_id_cek', 
+			'$customer_category', 
+			'$keranjang_cabang'
+			)";
 		
 		mysqli_query($conn, $query);
 
@@ -1053,6 +1103,7 @@ function updateQTYHarga($data) {
 
 	$stock_brg 			        = $data['stock_brg'];
 	$keranjang_qty              = $keranjang_qty_view * $keranjang_konversi_isi;
+	$checkboxHarga 				= $checkboxHarga != '' ? $checkboxHarga : 0;
 
 	if ( $keranjang_qty > $stock_brg ) {
 		echo"
@@ -1072,6 +1123,7 @@ function updateQTYHarga($data) {
 					keranjang_konversi_isi  = '$keranjang_konversi_isi'
 					WHERE keranjang_id 		= $id
 					";
+
 		mysqli_query($conn, $query);
 		return mysqli_affected_rows($conn);
 	}
@@ -1175,6 +1227,7 @@ function hapusKeranjangDraft($id) {
 
 function updateStock($data) {
 	global $conn;
+	global $sessionCabang;
 	$id                  		= $data['barang_ids'];
 	$keranjang_qty       		= $data['keranjang_qty'];
 	$keranjang_qty_view       	= $data['keranjang_qty_view'];
@@ -1190,9 +1243,9 @@ function updateStock($data) {
 	$keranjang_barang_sn_id     = $data['keranjang_barang_sn_id'];
 	$keranjang_sn               = $data['keranjang_sn'];
 	$invoice_customer_category2 = $data['invoice_customer_category2'];
-	$penjualan_cabang        	= $data['penjualan_cabang'];
+	// $penjualan_cabang        	= $data['penjualan_cabang'];
 
-	$kik                 		= $data['kik'];
+	$kik                 		= $_SESSION['user_id'];
 	$penjualan_invoice2  		= $data['penjualan_invoice2'];
 	$invoice_tgl         		= date("d F Y g:i:s a");
 	$invoice_total_beli       	= $data['invoice_total_beli'];
@@ -1213,9 +1266,9 @@ function updateStock($data) {
 	} 
 
 	$invoice_kembali     		= $invoice_bayar - $invoice_sub_total;
-	$invoice_date        		= date("Y-m-d");
-	$invoice_date_year_month    = date("Y-m");
-	$penjualan_date      		= $data['penjualan_date'];
+	$invoice_date        		= $data['tanggal'];
+	$invoice_date_year_month    = date("Y-m", strtotime($invoice_date ));
+	// $penjualan_date      		= $data['tanggal'];
 	$invoice_customer    		= $data['invoice_customer'];
 	$invoice_customer_category  = $data['invoice_customer_category'];
 	$invoice_kurir    	 		= $data['invoice_kurir'];
@@ -1229,7 +1282,8 @@ function updateStock($data) {
 	}
 	$invoice_piutang_jatuh_tempo= $data['invoice_piutang_jatuh_tempo'];
 	$invoice_piutang_lunas		= $data['invoice_piutang_lunas'];
-	$invoice_cabang             = $data['invoice_cabang'];
+	$invoice_cabang             = $sessionCabang;
+	// $invoice_cabang             = $data['invoice_cabang'];
 	
 
 	if ( $invoice_customer == 1 ) {
@@ -1259,13 +1313,19 @@ function updateStock($data) {
 		";
 	} else {
 		// query insert invoice
-		$query1 = "INSERT INTO invoice VALUES ('', '$penjualan_invoice2', '$penjualan_invoice_count', '$invoice_tgl', '$invoice_customer', '$invoice_customer_category', '$invoice_kurir', '1', '$invoice_tipe_transaksi', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_diskon', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$kik', '$invoice_date', '$invoice_date_year_month', ' ', ' ', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$invoice_marketplace', '$invoice_ekspedisi', '$invoice_no_resi', '-', '$invoice_piutang', '$invoice_piutang_dp', '$invoice_piutang_jatuh_tempo', '$invoice_piutang_lunas', 0, '$invoice_cabang')";
+		$query1 = "INSERT INTO invoice
+					(penjualan_invoice, penjualan_invoice_count, invoice_tgl, invoice_customer, invoice_customer_category, invoice_kurir, invoice_status_kurir, invoice_tipe_transaksi, invoice_total_beli, invoice_total, invoice_ongkir, invoice_diskon, invoice_sub_total, invoice_bayar, invoice_kembali, invoice_kasir, invoice_date, invoice_date_year_month, invoice_date_edit, invoice_kasir_edit, invoice_total_beli_lama, invoice_total_lama, invoice_ongkir_lama, invoice_sub_total_lama, invoice_bayar_lama, invoice_kembali_lama, invoice_marketplace, invoice_ekspedisi, invoice_no_resi, invoice_date_selesai_kurir, invoice_piutang, invoice_piutang_dp, invoice_piutang_jatuh_tempo, invoice_piutang_lunas, invoice_draft, invoice_cabang)
+					VALUES
+					('$penjualan_invoice2', '$penjualan_invoice_count', '$invoice_tgl', '$invoice_customer', '$invoice_customer_category', '$invoice_kurir', '1', '$invoice_tipe_transaksi', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_diskon', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$kik', '$invoice_date', '$invoice_date_year_month', ' ', ' ', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$invoice_marketplace', '$invoice_ekspedisi', '$invoice_no_resi', '-', '$invoice_piutang', '$invoice_piutang_dp', '$invoice_piutang_jatuh_tempo', '$invoice_piutang_lunas', 0, '$invoice_cabang')";
 		// var_dump($query1); die();
 		mysqli_query($conn, $query1);
 
 		for( $x=0; $x<$jumlah; $x++ ){
-			$query = "INSERT INTO penjualan VALUES ('', '$id[$x]', '$id[$x]', '$keranjang_qty_view[$x]', '$keranjang_qty[$x]', '$keranjang_konversi_isi[$x]', '$keranjang_satuan[$x]','$keranjang_harga_beli[$x]', '$keranjang_harga[$x]', '$keranjang_harga_parent[$x]', '$keranjang_harga_edit[$x]', '$keranjang_id_kasir[$x]', '$penjualan_invoice[$x]' , '$penjualan_date[$x]', '$invoice_date_year_month', '$keranjang_qty_view[$x]', '$keranjang_qty_view[$x]', '$keranjang_barang_option_sn[$x]', '$keranjang_barang_sn_id[$x]', '$keranjang_sn[$x]', '$invoice_customer_category2[$x]', '$penjualan_cabang[$x]')";
-			$query2 = "INSERT INTO terlaris VALUES ('', '$id[$x]', '$keranjang_qty[$x]')";
+			$query = "INSERT INTO penjualan
+						(penjualan_barang_id, barang_id, barang_qty, barang_qty_keranjang, barang_qty_konversi_isi, keranjang_satuan, keranjang_harga_beli, keranjang_harga, keranjang_harga_parent, keranjang_harga_edit, keranjang_id_kasir, penjualan_invoice, penjualan_date, penjualan_date_year_month, barang_qty_lama, barang_qty_lama_parent, barang_option_sn, barang_sn_id, barang_sn_desc, invoice_customer_category, penjualan_cabang)
+						VALUES
+						('$id[$x]', '$id[$x]', '$keranjang_qty_view[$x]', '$keranjang_qty[$x]', '$keranjang_konversi_isi[$x]', '$keranjang_satuan[$x]','$keranjang_harga_beli[$x]', '$keranjang_harga[$x]', '$keranjang_harga_parent[$x]', '$keranjang_harga_edit[$x]', '$keranjang_id_kasir[$x]', '$penjualan_invoice[$x]' , '$invoice_date', '$invoice_date_year_month', '$keranjang_qty_view[$x]', '$keranjang_qty_view[$x]', '$keranjang_barang_option_sn[$x]', '$keranjang_barang_sn_id[$x]', '$keranjang_sn[$x]', '$invoice_customer_category2[$x]', '$sessionCabang')";
+			$query2 = "INSERT INTO terlaris (barang_id, barang_terjual) VALUES ('$id[$x]', '$keranjang_qty[$x]')";
 
 			mysqli_query($conn, $query);
 			mysqli_query($conn, $query2);
@@ -1279,6 +1339,7 @@ function updateStock($data) {
 
 function updateStockDraft($data) {
 	global $conn;
+	global $sessionCabang;
 	$id                  		= $data['barang_ids'];
 	$keranjang_qty       		= $data['keranjang_qty'];
 	$keranjang_qty_view       	= $data['keranjang_qty_view'];
@@ -1297,9 +1358,8 @@ function updateStockDraft($data) {
 	$keranjang_nama 			= $data['keranjang_nama'];
 	$barang_kode_slug 			= $data['barang_kode_slug'];
 	$keranjang_id_cek 			= $data['keranjang_id_cek'];
-	$penjualan_cabang        	= $data['penjualan_cabang'];
 
-	$kik                 		= $data['kik'];
+	$kik                 		= $_SESSION['user_id'];
 	$penjualan_invoice2  		= $data['penjualan_invoice2'];
 	$invoice_tgl         		= date("d F Y g:i:s a");
 	$invoice_total_beli       	= $data['invoice_total_beli'];
@@ -1309,13 +1369,14 @@ function updateStockDraft($data) {
 	
 	$invoice_sub_total   		= $invoice_total + $invoice_ongkir;
 	$invoice_sub_total   		= $invoice_sub_total - $invoice_diskon;
-	$invoice_bayar       		= htmlspecialchars($data['angka1']);
-	
+	$invoice_bayar       		= $invoice_bayar == '' ? 0 : htmlspecialchars($data['angka1']);
 
 	$invoice_kembali     		= $invoice_bayar - $invoice_sub_total;
-	$invoice_date        		= date("Y-m-d");
-	$invoice_date_year_month    = date("Y-m");
-	$penjualan_date      		= $data['penjualan_date'];
+	// $invoice_date        		= date("Y-m-d");
+	// $invoice_date_year_month    = date("Y-m");
+	$invoice_date        		= $data['tanggal'];
+	$invoice_date_year_month    = date("Y-m", strtotime($invoice_date ));
+	// $penjualan_date      		= $data['date'];
 	$invoice_customer    		= $data['invoice_customer'];
 	$invoice_customer_category  = $data['invoice_customer_category'];
 	$invoice_kurir    	 		= $data['invoice_kurir'];
@@ -1329,7 +1390,7 @@ function updateStockDraft($data) {
 	}
 	$invoice_piutang_jatuh_tempo= $data['invoice_piutang_jatuh_tempo'];
 	$invoice_piutang_lunas		= $data['invoice_piutang_lunas'];
-	$invoice_cabang             = $data['invoice_cabang'];
+	// $invoice_cabang             = $data['invoice_cabang'];
 	
 
 	if ( $invoice_customer == 1 ) {
@@ -1345,13 +1406,18 @@ function updateStockDraft($data) {
 
 
 	// query insert invoice
-	$query1 = "INSERT INTO invoice VALUES ('', '$penjualan_invoice2', '$penjualan_invoice_count', '$invoice_tgl', '$invoice_customer', '$invoice_customer_category', '$invoice_kurir', '1', '$invoice_tipe_transaksi', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_diskon', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$kik', '$invoice_date', '$invoice_date_year_month', ' ', ' ', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$invoice_marketplace', '$invoice_ekspedisi', '$invoice_no_resi', '-', '$invoice_piutang', '$invoice_piutang_dp', '$invoice_piutang_jatuh_tempo', '$invoice_piutang_lunas', 1, '$invoice_cabang')";
+	$query1 = "INSERT INTO invoice 
+				(penjualan_invoice, penjualan_invoice_count, invoice_tgl, invoice_customer, invoice_customer_category, invoice_kurir, invoice_status_kurir, invoice_tipe_transaksi, invoice_total_beli, invoice_total, invoice_ongkir, invoice_diskon, invoice_sub_total, invoice_bayar, invoice_kembali, invoice_kasir, invoice_date, invoice_date_year_month, invoice_date_edit, invoice_kasir_edit, invoice_total_beli_lama, invoice_total_lama, invoice_ongkir_lama, invoice_sub_total_lama, invoice_bayar_lama, invoice_kembali_lama, invoice_marketplace, invoice_ekspedisi, invoice_no_resi, invoice_date_selesai_kurir, invoice_piutang, invoice_piutang_dp, invoice_piutang_jatuh_tempo, invoice_piutang_lunas, invoice_draft, invoice_cabang)
+				VALUES
+				('$penjualan_invoice2', '$penjualan_invoice_count', '$invoice_tgl', '$invoice_customer', '$invoice_customer_category', '$invoice_kurir', '1', '$invoice_tipe_transaksi', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_diskon', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$kik', '$invoice_date', '$invoice_date_year_month', ' ', ' ', '$invoice_total_beli', '$invoice_total', '$invoice_ongkir', '$invoice_sub_total', '$invoice_bayar', '$invoice_kembali', '$invoice_marketplace', '$invoice_ekspedisi', '$invoice_no_resi', '-', '$invoice_piutang', '$invoice_piutang_dp', '$invoice_piutang_jatuh_tempo', '$invoice_piutang_lunas', 1, '$sessionCabang')";
 		// var_dump($query1); die();
 		mysqli_query($conn, $query1);
 
 	for( $x=0; $x<$jumlah; $x++ ){
 
-		$query = "INSERT INTO keranjang_draft VALUES ('', '$keranjang_nama[$x]', '$keranjang_harga_beli[$x]', '$keranjang_harga[$x]', '$keranjang_harga_parent[$x]', '$keranjang_harga_edit[$x]', '$keranjang_satuan[$x]', '$id[$x]', '$barang_kode_slug[$x]', '$keranjang_qty[$x]', '$keranjang_qty_view[$x]', '$keranjang_konversi_isi[$x]', '$keranjang_barang_sn_id[$x]', '$keranjang_barang_option_sn[$x]', '$keranjang_sn[$x]', '$keranjang_id_kasir[$x]', '$keranjang_id_cek[$x]', '$invoice_customer_category2[$x]', 1, '$penjualan_invoice[$x]', '$penjualan_cabang[$x]')";
+		$query = "INSERT INTO keranjang_draft
+					(keranjang_nama,keranjang_harga_beli,keranjang_harga,keranjang_harga_parent,keranjang_harga_edit,keranjang_satuan,barang_id,barang_kode_slug,keranjang_qty,keranjang_qty_view,keranjang_konversi_isi,keranjang_barang_sn_id,keranjang_barang_option_sn,keranjang_sn,keranjang_id_kasir,keranjang_id_cek,keranjang_tipe_customer,keranjang_draft_status,keranjang_invoice, keranjang_cabang)
+					VALUES ('$keranjang_nama[$x]', '$keranjang_harga_beli[$x]', '$keranjang_harga[$x]', '$keranjang_harga_parent[$x]', '$keranjang_harga_edit[$x]', '$keranjang_satuan[$x]', '$id[$x]', '$barang_kode_slug[$x]', '$keranjang_qty[$x]', '$keranjang_qty_view[$x]', '$keranjang_konversi_isi[$x]', '$keranjang_barang_sn_id[$x]', '$keranjang_barang_option_sn[$x]', '$keranjang_sn[$x]', '$keranjang_id_kasir[$x]', '$keranjang_id_cek[$x]', '$invoice_customer_category2[$x]', 1, '$penjualan_invoice2', '$sessionCabang')";
 		mysqli_query($conn, $query);
 	}
 		
@@ -1363,6 +1429,7 @@ function updateStockDraft($data) {
 
 function updateStockSaveDraft($data) {
 	global $conn;
+	global $sessionCabang;
 	$id                  		= $data['barang_ids'];
 	$keranjang_qty       		= $data['keranjang_qty'];
 	$keranjang_qty_view       	= $data['keranjang_qty_view'];
@@ -1373,15 +1440,15 @@ function updateStockSaveDraft($data) {
 	$keranjang_harga_parent		= $data['keranjang_harga_parent'];
 	$keranjang_harga_edit		= $data['keranjang_harga_edit'];
 	$keranjang_id_kasir  		= $data['keranjang_id_kasir'];
-	$penjualan_invoice   		= $data['penjualan_invoice'];
+	// $penjualan_invoice   		= $data['penjualan_invoice'];
 	$keranjang_barang_option_sn = $data['keranjang_barang_option_sn'];
 	$keranjang_barang_sn_id     = $data['keranjang_barang_sn_id'];
 	$keranjang_sn               = $data['keranjang_sn'];
 	$invoice_customer_category2 = $data['invoice_customer_category2'];
-	$penjualan_cabang        	= $data['penjualan_cabang'];
+	// $penjualan_cabang        	= $data['penjualan_cabang'];
 
 	$invoice_id 				= $data['invoice_id'];
-	$kik                 		= $data['kik'];
+	$kik                 		= $_SESSION['user_id'];
 	$penjualan_invoice2  		= $data['penjualan_invoice2'];
 	$invoice_tgl         		= date("d F Y g:i:s a");
 	$invoice_total_beli       	= $data['invoice_total_beli'];
@@ -1392,12 +1459,20 @@ function updateStockSaveDraft($data) {
 	$invoice_sub_total   		= $invoice_total + $invoice_ongkir;
 	$invoice_sub_total   		= $invoice_sub_total - $invoice_diskon;
 	$invoice_bayar       		= htmlspecialchars($data['angka1']);
-	
+
+	if ( $invoice_bayar == null ) {
+		echo"
+			<script>
+				alert('Anda Belum Input Nominal BAYAR !!!');
+				document.location.href = '';
+			</script>
+		";
+	} 
 
 	$invoice_kembali     		= $invoice_bayar - $invoice_sub_total;
-	$invoice_date        		= date("Y-m-d");
-	$invoice_date_year_month    = date("Y-m");
-	$penjualan_date      		= $data['penjualan_date'];
+	$invoice_date        		= $data['tanggal'];
+	$invoice_date_year_month    = date("Y-m", strtotime($invoice_date ));
+	// $penjualan_date      		= $data['penjualan_date'];
 	$invoice_customer    		= $data['invoice_customer'];
 	$invoice_customer_category  = $data['invoice_customer_category'];
 	$invoice_kurir    	 		= $data['invoice_kurir'];
@@ -1461,15 +1536,18 @@ function updateStockSaveDraft($data) {
 				invoice_piutang_jatuh_tempo = '$invoice_piutang_jatuh_tempo', 
 				invoice_piutang_lunas 		= '$invoice_piutang_lunas', 
 				invoice_draft 				= 0, 
-				invoice_cabang 				= '$invoice_cabang'
+				invoice_cabang 				= '$sessionCabang'
 				WHERE invoice_id 			= $invoice_id
 		";
 		// var_dump($query1); die();
 		mysqli_query($conn, $query1);
 
 		for( $x=0; $x<$jumlah; $x++ ){
-			$query = "INSERT INTO penjualan VALUES ('', '$id[$x]', '$id[$x]', '$keranjang_qty_view[$x]', '$keranjang_qty[$x]', '$keranjang_konversi_isi[$x]', '$keranjang_satuan[$x]','$keranjang_harga_beli[$x]', '$keranjang_harga[$x]', '$keranjang_harga_parent[$x]', '$keranjang_harga_edit[$x]', '$keranjang_id_kasir[$x]', '$penjualan_invoice[$x]' , '$penjualan_date[$x]', '$invoice_date_year_month', '$keranjang_qty_view[$x]', '$keranjang_qty_view[$x]', '$keranjang_barang_option_sn[$x]', '$keranjang_barang_sn_id[$x]', '$keranjang_sn[$x]', '$invoice_customer_category2[$x]', '$penjualan_cabang[$x]')";
-			$query2 = "INSERT INTO terlaris VALUES ('', '$id[$x]', '$keranjang_qty[$x]')";
+			$query = "INSERT INTO penjualan
+						(penjualan_barang_id, barang_id, barang_qty, barang_qty_keranjang, barang_qty_konversi_isi, keranjang_satuan, keranjang_harga_beli, keranjang_harga, keranjang_harga_parent, keranjang_harga_edit, keranjang_id_kasir, penjualan_invoice, penjualan_date, penjualan_date_year_month, barang_qty_lama, barang_qty_lama_parent, barang_option_sn, barang_sn_id, barang_sn_desc, invoice_customer_category, penjualan_cabang)
+						VALUES
+						('$id[$x]', '$id[$x]', '$keranjang_qty_view[$x]', '$keranjang_qty[$x]', '$keranjang_konversi_isi[$x]', '$keranjang_satuan[$x]','$keranjang_harga_beli[$x]', '$keranjang_harga[$x]', '$keranjang_harga_parent[$x]', '$keranjang_harga_edit[$x]', '$keranjang_id_kasir[$x]', '$penjualan_invoice2' , '$invoice_date', '$invoice_date_year_month', '$keranjang_qty_view[$x]', '$keranjang_qty_view[$x]', '$keranjang_barang_option_sn[$x]', '$keranjang_barang_sn_id[$x]', '$keranjang_sn[$x]', '$invoice_customer_category2[$x]', '$sessionCabang')";
+			$query2 = "INSERT INTO terlaris (barang_id, barang_terjual) VALUES ('$id[$x]', '$keranjang_qty[$x]')";
 			// var_dump($query); die();
 			mysqli_query($conn, $query);
 			mysqli_query($conn, $query2);
@@ -1856,6 +1934,9 @@ function tambahKeranjangPembelian($barang_id, $keranjang_nama, $keranjang_harga,
 	
 	// Kondisi jika scan Barcode Tidak sesuai
 	if ( $barang_id != null ) {
+		$q_barang = mysqli_query($conn, "SELECT barang_harga_beli FROM barang WHERE barang_id = '" . $barang_id . "'");
+		$barang = mysqli_fetch_assoc($q_barang);
+		$keranjang_harga = $barang ? $barang['barang_harga_beli'] : 0;
 		if ( $barang_id_cek > 0 ) {
 			$keranjangParent = mysqli_query( $conn, "select keranjang_qty from keranjang_pembelian where keranjang_id_cek = '".$keranjang_id_cek."'");
 		    $kp = mysqli_fetch_array($keranjangParent); 
@@ -1871,7 +1952,7 @@ function tambahKeranjangPembelian($barang_id, $keranjang_nama, $keranjang_harga,
 
 		} else {
 			// query insert data
-			$query = "INSERT INTO keranjang_pembelian VALUES ('', '$keranjang_nama', '$keranjang_harga', '$barang_id', '$keranjang_qty', '$keranjang_id_kasir', '$keranjang_id_cek', '$keranjang_cabang')";
+			$query = "INSERT INTO keranjang_pembelian(keranjang_nama, keranjang_harga, barang_id, keranjang_qty, keranjang_id_kasir, keranjang_id_cek, keranjang_cabang) VALUES ('$keranjang_nama', '$keranjang_harga', '$barang_id', '$keranjang_qty', '$keranjang_id_kasir', '$keranjang_id_cek', '$keranjang_cabang')";
 			
 			mysqli_query($conn, $query);
 
@@ -1899,7 +1980,7 @@ function tambahKeranjangPembelianBarcode($data) {
 
     $barang_id          = $br['barang_id'];
 	$keranjang_nama     = $br['barang_nama'];
-	$keranjang_harga    = 0;
+	$keranjang_harga    = $br['barang_harga_beli'];
 	$keranjang_qty      = 1;
 	$keranjang_id_cek   = $barang_id.$keranjang_id_kasir.$keranjang_cabang;
 
@@ -1970,26 +2051,38 @@ function updateQTYpembelian($data) {
 // ============================================== Transaksi Pembelian ======================== //
 function updateStockPembelian($data) {
 	global $conn;
+	global $sessionCabang;
+
 	$id                  = $data["barang_ids"];
 	$keranjang_qty       = $data["keranjang_qty"];
 	$keranjang_id_kasir  = $data['keranjang_id_kasir'];
-	$pembelian_invoice   = $data['pembelian_invoice'];
-	$kik                 = $data['kik'];
+	// $pembelian_invoice   = $data['pembelian_invoice'];
+	$kik                 = $_SESSION['user_id'];
 	$barang_harga_beli   = $data['barang_harga_beli'];
-	$pembelian_invoice_parent = $data['pembelian_invoice_parent'];
-	$invoice_pembelian_cabang = $data['invoice_pembelian_cabang'];
+	// $pembelian_invoice_parent = $data['pembelian_invoice_parent'];
+	$invoice_pembelian_cabang = $sessionCabang;
 
-	$pembelian_invoice2  = $data['pembelian_invoice2'];
+	// $pembelian_invoice2  = $data['pembelian_invoice2'];
 	$invoice_tgl         = date("d F Y g:i:s a");
 	$invoice_supplier    = $data['invoice_supplier'];
 	$invoice_total       = $data['invoice_total'];
 	$invoice_bayar       = $data['angka1'];
+	$invoice_date        = $data['tanggal'];
 	$invoice_kembali     = $invoice_bayar - $invoice_total;
-	$invoice_date        = date("Y-m-d");
-	$pembelian_date      = $data['pembelian_date'];
-	$invoice_pembelian_number_delete = $data['invoice_pembelian_number_delete'];
-	$pembelian_invoice_parent2       = $data['pembelian_invoice_parent2'];
+	// $pembelian_date      = $data['pembelian_date'];
+	// $invoice_pembelian_number_delete = $data['invoice_pembelian_number_delete'];
+	// $pembelian_invoice_parent2       = $data['pembelian_invoice_parent2'];
 	$invoice_hutang				 	 = $data['invoice_hutang'];
+
+	$pembelian = mysqli_query($conn,"select invoice_pembelian_id, pembelian_invoice_parent from invoice_pembelian order by invoice_pembelian_id desc");
+	$jmlPembelian = mysqli_num_rows($pembelian);
+	$invoice = date('Ymd') . ($jmlPembelian + 1);
+	
+	if($jmlPembelian > 0){
+		$invoice = mysqli_fetch_assoc($pembelian);
+		$invoice = $invoice['pembelian_invoice_parent'] + 1;
+	}
+
 	if ( $invoice_hutang == 1 ) {
 		$invoice_hutang_dp = $invoice_bayar;
 	} else {
@@ -2002,7 +2095,7 @@ function updateStockPembelian($data) {
 	$jumlah = count($keranjang_id_kasir);
 
 	// Cek No. Invoice
-	$invoice_cek = mysqli_num_rows(mysqli_query($conn, "select * from invoice_pembelian where pembelian_invoice = '$pembelian_invoice2' && invoice_pembelian_cabang = '$invoice_pembelian_cabang' "));
+	$invoice_cek = mysqli_num_rows(mysqli_query($conn, "select * from invoice_pembelian where pembelian_invoice = '$invoice' && invoice_pembelian_cabang = '$invoice_pembelian_cabang' "));
 
 	if ( $invoice_cek > 0 ) {
 		echo "
@@ -2012,33 +2105,39 @@ function updateStockPembelian($data) {
 		";
 	} else {
 		// query insert invoice
-		$query1 = "INSERT INTO invoice_pembelian VALUES ('', '$pembelian_invoice2', '$pembelian_invoice_parent2', '$invoice_tgl', '$invoice_supplier', '$invoice_total', '$invoice_bayar', '$invoice_kembali', '$kik', '$invoice_date', ' ', ' ', '$invoice_total', '$invoice_bayar', '$invoice_kembali', '$invoice_hutang', '$invoice_hutang_dp', '$invoice_hutang_jatuh_tempo', '$invoice_hutang_lunas', '$invoice_pembelian_cabang')";
+		$query1 = "INSERT INTO invoice_pembelian
+					(pembelian_invoice, pembelian_invoice_parent, invoice_tgl, invoice_supplier, invoice_total, invoice_bayar, invoice_kembali, invoice_kasir, invoice_date, invoice_date_edit, invoice_kasir_edit, invoice_total_lama, invoice_bayar_lama, invoice_kembali_lama, invoice_hutang, invoice_hutang_dp, invoice_hutang_jatuh_tempo, invoice_hutang_lunas, invoice_pembelian_cabang) 
+					VALUES
+					('$invoice', '$invoice', '$invoice_tgl', '$invoice_supplier', '$invoice_total', '$invoice_bayar', '$invoice_kembali', '$kik', '$invoice_date', ' ', ' ', '$invoice_total', '$invoice_bayar', '$invoice_kembali', '$invoice_hutang', '$invoice_hutang_dp', '$invoice_hutang_jatuh_tempo', '$invoice_hutang_lunas', '$invoice_pembelian_cabang')";
 		// var_dump($query1); die();
 		mysqli_query($conn, $query1);
-
+		
 
 		for( $x=0; $x<$jumlah; $x++ ){
-			$query = "INSERT INTO pembelian VALUES ('', '$id[$x]', '$id[$x]', '$keranjang_qty[$x]', '$keranjang_id_kasir[$x]', '$pembelian_invoice[$x]', '$pembelian_invoice_parent[$x]', '$pembelian_date[$x]', '$keranjang_qty[$x]', '$keranjang_qty[$x]', '$barang_harga_beli[$x]', '$pembelian_cabang[$x]')";
+			$query = "INSERT INTO pembelian
+						(pembelian_barang_id, barang_id, barang_qty, keranjang_id_kasir, pembelian_invoice, pembelian_invoice_parent, pembelian_date, barang_qty_lama, barang_qty_lama_parent, barang_harga_beli, pembelian_cabang)
+						VALUES
+						('$id[$x]', '$id[$x]', '$keranjang_qty[$x]', '$keranjang_id_kasir[$x]', '$invoice', '$invoice', '$invoice_date', '$keranjang_qty[$x]', '$keranjang_qty[$x]', '$barang_harga_beli[$x]', '$pembelian_cabang[$x]')";
 			mysqli_query($conn, $query);
 
 			// Mencari Rata-rata Pembelian
-			$hargaBeli= mysqli_query($conn, "SELECT AVG(barang_harga_beli) AS average FROM pembelian WHERE barang_id = $id[$x]");
-            $hargaBeli = mysqli_fetch_assoc($hargaBeli);
-            $hargaBeli = ceil($hargaBeli['average']);
+			// $hargaBeli= mysqli_query($conn, "SELECT AVG(barang_harga_beli) AS average FROM pembelian WHERE barang_id = $id[$x]");
+            // $hargaBeli = mysqli_fetch_assoc($hargaBeli);
+            // $hargaBeli = $hargaBeli['barang_harga_beli'];
 
             // Edit Data
 			$query2 = "UPDATE barang SET 
-						barang_harga_beli     = '$hargaBeli'
+						barang_harga_beli     = '$barang_harga_beli[$x]'
 						WHERE barang_id       = $id[$x]
 				";
 
 			mysqli_query($conn, $query2);
+			if($conn->error) {echo($conn->error);die;}
 		}
-		
 
 		mysqli_query( $conn, "DELETE FROM keranjang_pembelian WHERE keranjang_id_kasir = $kik");
-		mysqli_query( $conn, "DELETE FROM invoice_pembelian_number WHERE invoice_pembelian_number_delete = $invoice_pembelian_number_delete");
-		return mysqli_affected_rows($conn);
+		// mysqli_query( $conn, "DELETE FROM invoice_pembelian_number WHERE invoice_pembelian_number_delete = $invoice_pembelian_number_delete");
+		return ['success' => mysqli_affected_rows($conn), 'data' => ['invoice' => $invoice]];
 	}
 }
 
@@ -3021,10 +3120,11 @@ function editLabaBersih($data) {
 				lb_pengeluaran_bensin  				= '$lb_pengeluaran_bensin',
 				lb_pengeluaran_tak_terduga  		= '$lb_pengeluaran_tak_terduga',
 				lb_pengeluaran_lain 				= '$lb_pengeluaran_lain'
-				WHERE lb_id   = $id && lb_cabang = $lb_cabang
+				WHERE lb_id = $id && lb_cabang = $lb_cabang
 				";
 
 	mysqli_query($conn, $query);
+	echo $conn->error;die;
 	return mysqli_affected_rows($conn);
 }
 
@@ -3043,7 +3143,9 @@ function tambahStockOpname($data) {
 	$stock_opname_cabang 			= htmlspecialchars($data['stock_opname_cabang']);
 
 	// query insert data
-	$query = "INSERT INTO stock_opname VALUES ('', '$stock_opname_date_create', '$stock_opname_datetime_create', '$stock_opname_date_proses', '$stock_opname_user_create', '$stock_opname_user_eksekusi', '$stock_opname_status', '', '', '', '$stock_opname_tipe', '$stock_opname_cabang')";
+	$query = "INSERT INTO stock_opname (stock_opname_date_create, stock_opname_datetime_create, stock_opname_date_proses, stock_opname_user_create, stock_opname_user_eksekusi, stock_opname_status, stock_opname_user_upload, stock_opname_date_upload, stock_opname_datetime_upload, stock_opname_tipe, stock_opname_cabang)
+				VALUES
+			  ('$stock_opname_date_create', '$stock_opname_datetime_create', '$stock_opname_date_proses', '$stock_opname_user_create', '$stock_opname_user_eksekusi', '$stock_opname_status', 0, '', '', '$stock_opname_tipe', '$stock_opname_cabang')";
 	mysqli_query($conn, $query);
 
 	return mysqli_affected_rows($conn);
@@ -3137,8 +3239,484 @@ function editStockOpname($data) {
 	return mysqli_affected_rows($conn);
 }
 
+// ======================================== KARYAWAN =============================== //
+function tambahKaryawan($data) {
+	global $conn;
+	global $sessionCabang;
+	$nama_karyawan  = htmlspecialchars($data["nama_karyawan"]);
+	$jabatan        = base64_decode($data["jabatan"]);
+	$status         = base64_decode($data["status"]);
+	$tanggal_masuk  = $data["tanggal_masuk"];
+	$tanggal_keluar = $data["tanggal_keluar"] == '' ? NULL : $data["tanggal_keluar"];
+	$created_at     = date('Y-m-d H:i:s');
+	$updated_at     = date('Y-m-d H:i:s');
+
+	$query = "INSERT INTO karyawan(nama_karyawan, jabatan, status, tanggal_masuk, tanggal_keluar, cabang, created_at, updated_at)
+				VALUES
+			  (?, ?, ?, ?, ?, ?, ?, ?)";
+	if ($stmt = $conn->prepare($query)) {
+		$stmt->bind_param('ssssssss', $nama_karyawan, $jabatan, $status, $tanggal_masuk, $tanggal_keluar, $sessionCabang, $created_at, $updated_at);
+		if ($stmt->execute()) {
+			$stmt->close();
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function editKaryawan($data) {
+	global $conn;
+	$id 			= $data["id"];
+	$nama_karyawan  = htmlspecialchars($data["nama_karyawan"]);
+	$jabatan        = base64_decode($data["jabatan"]);
+	$status         = base64_decode($data["status"]);
+	$tanggal_masuk  = $data["tanggal_masuk"];
+	$tanggal_keluar = $data["tanggal_keluar"] == '' ? NULL : $data["tanggal_keluar"];
+	$updated_at     = date('Y-m-d H:i:s');
+
+	$query = "UPDATE karyawan SET nama_karyawan = ?, jabatan = ?, status = ?, tanggal_masuk = ?, tanggal_keluar = ?, updated_at = ? WHERE id = ?";
+
+	mysqli_query($conn, $query);
+	if ($stmt = $conn->prepare($query)) {
+		$stmt->bind_param('ssssssi', $nama_karyawan, $jabatan, $status, $tanggal_masuk, $tanggal_keluar, $updated_at, $id);
+		if ($stmt->execute()) {
+			$stmt->close();
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function hapusKaryawan($id) {
+	global $conn;
+	$id = $id;
+	mysqli_query($conn, "DELETE FROM karyawan WHERE id = $id");
+	return mysqli_affected_rows($conn);
+}
+
+// ====================================== INCOMES & EXPENSES =============================== //
+
+function tambahRevenue($data){
+	global $conn;
+	global $sessionCabang;
+	$incomes_expenses = base64_decode($data['incomes_expenses']);
+	$jenis = 'revenue';
+	$nama = htmlspecialchars($data['nama']);
+	$total = $data['total'];
+	$real_income = $data['real_income'];
+	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
+	$tanggal = $data['tanggal'];
+	$created_at = date('Y-m-d H:i:s');
+	$updated_at = date('Y-m-d H:i:s');
+
+	$conn->begin_transaction();
+	try {
+		$query = "INSERT INTO laba_bersih_detail(incomes_expenses, jenis, nama, total, real_income, jenis_pembayaran, tanggal, cabang, created_at, updated_at)
+					VALUES
+				(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+		if(!$laba_bersih){
+			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+				VALUES
+				('$real_income', 0, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+		} else {
+			$total_laba_pendapatan = $laba_bersih['lb_pendapatan_lain'] + $real_income;
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		}
+
+		if ($stmt = $conn->prepare($query)) {
+			$stmt->bind_param('ssssssssss', $incomes_expenses, $jenis, $nama, $total, $real_income, $jenis_pembayaran, $tanggal, $sessionCabang, $created_at, $updated_at);
+			if ($stmt->execute()) {
+				$stmt->close();
+			}
+		}
+		$conn->commit();
+		return true;
+	} catch (mysqli_sql_exception $exception) {
+		$conn->rollback();
+		throw $exception;
+	}
+
+	return false;
+}
+
+function updateRevenue($data){
+	global $conn;
+	global $sessionCabang;
+	$nama = htmlspecialchars($data['nama']);
+	$total = $data['total'];
+	$real_income = $data['real_income'];
+	$id = base64_decode($data['id']);
+	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
+	$tanggal = $data['tanggal'];
+	$updated_at = date('Y-m-d H:i:s');
+
+	$revenue_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
+
+	if(mysqli_num_rows($revenue_query) == 0){
+		return false;
+	}
+
+	$revenue = mysqli_fetch_assoc($revenue_query);
+	$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+	$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+	
+	$conn->begin_transaction();
+	try {
+		$query = "UPDATE laba_bersih_detail SET nama = ?, total = ?, real_income = ?, jenis_pembayaran = ?, tanggal = ?, cabang = ?, updated_at = ? WHERE id = ?";
+		$total_laba_pendapatan = ($laba_bersih['lb_pendapatan_lain'] - $revenue['real_income']) + $real_income;
+		mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		if ($stmt = $conn->prepare($query)) {
+			$stmt->bind_param('sssssssi', $nama, $total, $real_income, $jenis_pembayaran, $tanggal, $sessionCabang, $updated_at, $id);
+			if ($stmt->execute()) {
+				$stmt->close();
+			}
+		}
+
+		$conn->commit();
+		return true;
+	} catch (mysqli_sql_exception $exception) {
+		$conn->rollback();
+		throw $exception;
+	}
+
+	return false;
+}
+
+function tambahIncomesExpenses($data){
+	global $conn;
+	global $sessionCabang;
+	$incomes_expenses = base64_decode($data['incomes_expenses']);
+	$jenis = base64_decode($data['type']);
+	$nama = htmlspecialchars($data['nama']);
+	$harga = $data['harga'];
+	$qty = $data['qty'];
+	$total = $data['total'];
+	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
+	$tanggal = $data['tanggal'];
+	$created_at = date('Y-m-d H:i:s');
+	$updated_at = date('Y-m-d H:i:s');
+
+	$conn->begin_transaction();
+	try {
+		$lb_pendapatan_lain = 0;
+		$lb_pengeluaran_gaji = 0;
+		$lb_pengeluaran_listrik = $jenis == 'listrik' ? $total : 0;
+		$lb_pengeluaran_tlpn_internet = $jenis == 'telepon_internet' ? $total : 0;
+		$lb_pengeluaran_perlengkapan_toko = $jenis == 'perlengkapan_toko' ? $total : 0;
+		$lb_pengeluaran_biaya_penyusutan = $jenis == 'biaya_penyusutan' ? $total : 0;
+		$lb_pengeluaran_bensin = $jenis == 'bensin' ? $total : 0;
+		$lb_pengeluaran_tak_terduga = $jenis == 'tak_terduga' ? $total : 0;
+		$lb_pengeluaran_lain = $jenis == 'lain_lain' ? $total : 0;
+
+		$query = "INSERT INTO laba_bersih_detail(incomes_expenses, jenis, nama, harga, qty, total, jenis_pembayaran, tanggal, cabang, created_at, updated_at)
+					VALUES
+				(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+
+		if(!$laba_bersih){
+			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+				VALUES
+				('$lb_pendapatan_lain', '$lb_pengeluaran_gaji', '$lb_pengeluaran_listrik', '$lb_pengeluaran_tlpn_internet', '$lb_pengeluaran_perlengkapan_toko', '$lb_pengeluaran_biaya_penyusutan', '$lb_pengeluaran_bensin', '$lb_pengeluaran_tak_terduga', '$lb_pengeluaran_lain', '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+		} else {
+			$total_lb_pengeluaran_listrik = $laba_bersih['lb_pengeluaran_listrik'] + $lb_pengeluaran_listrik;
+			$total_lb_pengeluaran_tlpn_internet = $laba_bersih['lb_pengeluaran_tlpn_internet'] + $lb_pengeluaran_tlpn_internet;
+			$total_lb_pengeluaran_perlengkapan_toko = $laba_bersih['lb_pengeluaran_perlengkapan_toko'] + $lb_pengeluaran_perlengkapan_toko;
+			$total_lb_pengeluaran_biaya_penyusutan = $laba_bersih['lb_pengeluaran_biaya_penyusutan'] + $lb_pengeluaran_biaya_penyusutan;
+			$total_lb_pengeluaran_bensin = $laba_bersih['lb_pengeluaran_bensin'] + $lb_pengeluaran_bensin;
+			$total_lb_pengeluaran_tak_terduga = $laba_bersih['lb_pengeluaran_tak_terduga'] + $lb_pengeluaran_tak_terduga;
+			$total_lb_pengeluaran_lain = $laba_bersih['lb_pengeluaran_lain'] + $lb_pengeluaran_lain;
+			
+			mysqli_query($conn, "UPDATE laba_bersih
+									SET lb_pengeluaran_listrik='$total_lb_pengeluaran_listrik',
+									lb_pengeluaran_tlpn_internet='$total_lb_pengeluaran_tlpn_internet',
+									lb_pengeluaran_perlengkapan_toko='$total_lb_pengeluaran_perlengkapan_toko',
+									lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
+									lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
+									lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
+									lb_pengeluaran_lain='$total_lb_pengeluaran_lain'
+									WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		}
+
+		if ($stmt = $conn->prepare($query)) {
+			$stmt->bind_param('sssssssssss', $incomes_expenses, $jenis, $nama, $harga, $qty, $total, $jenis_pembayaran, $tanggal, $sessionCabang, $created_at, $updated_at);
+			if ($stmt->execute()) {
+				$stmt->close();
+			}
+		}
+
+		$conn->commit();
+		return true;
+	} catch (mysqli_sql_exception $exception) {
+		$conn->rollback();
+		throw $exception;
+	}
+
+	return false;
+}
+
+function updateIncomesExpenses($data){
+	global $conn;
+	global $sessionCabang;
+	$jenis = base64_decode($data['type']);
+	$nama = htmlspecialchars($data['nama']);
+	$harga = $data['harga'];
+	$qty = $data['qty'];
+	$total = $data['total'];
+	$id = base64_decode($data['id']);
+	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
+	$tanggal = $data['tanggal'];
+	$updated_at = date('Y-m-d H:i:s');
+
+	$incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
+
+	if(mysqli_num_rows($incomes_expenses_query) == 0){
+		return false;
+	}
+
+	$incomes_expenses = mysqli_fetch_assoc($incomes_expenses_query);
+	$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+	$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+	
+	$conn->begin_transaction();
+	try {
+		$query = "UPDATE laba_bersih_detail SET nama = ?, harga = ?, qty = ?, total = ?, jenis_pembayaran = ?, tanggal = ?, cabang = ?, updated_at = ? WHERE id = ?";
+		
+		$total_lb_pengeluaran_listrik = $jenis == 'listrik' ? ($laba_bersih['lb_pengeluaran_listrik'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_listrik'];
+		$total_lb_pengeluaran_tlpn_internet = $jenis == 'telepon_internet' ? ($laba_bersih['lb_pengeluaran_tlpn_internet'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_tlpn_internet'];
+		$total_lb_pengeluaran_perlengkapan_toko = $jenis == 'perlengkapan_toko' ? ($laba_bersih['lb_pengeluaran_perlengkapan_toko'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_perlengkapan_toko'];
+		$total_lb_pengeluaran_biaya_penyusutan = $jenis == 'biaya_penyusutan' ? ($laba_bersih['lb_pengeluaran_biaya_penyusutan'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_biaya_penyusutan'];
+		$total_lb_pengeluaran_bensin = $jenis == 'bensin' ? ($laba_bersih['lb_pengeluaran_bensin'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_bensin'];
+		$total_lb_pengeluaran_tak_terduga = $jenis == 'tak_terduga' ? ($laba_bersih['lb_pengeluaran_tak_terduga'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_tak_terduga'];
+		$total_lb_pengeluaran_lain = $jenis == 'lain_lain' ? ($laba_bersih['lb_pengeluaran_lain'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_lain'];
+		
+		mysqli_query($conn, "UPDATE laba_bersih
+								SET lb_pengeluaran_listrik='$total_lb_pengeluaran_listrik',
+								lb_pengeluaran_tlpn_internet='$total_lb_pengeluaran_tlpn_internet',
+								lb_pengeluaran_perlengkapan_toko='$total_lb_pengeluaran_perlengkapan_toko',
+								lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
+								lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
+								lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
+								lb_pengeluaran_lain='$total_lb_pengeluaran_lain'
+								WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+
+		if ($stmt = $conn->prepare($query)) {
+			$stmt->bind_param('ssssssssi', $nama, $harga, $qty, $total, $jenis_pembayaran, $tanggal, $sessionCabang, $updated_at, $id);
+			if ($stmt->execute()) {
+				$stmt->close();
+			}
+		}
+
+		$conn->commit();
+		return true;
+	} catch (mysqli_sql_exception $exception) {
+		$conn->rollback();
+		throw $exception;
+	}
+
+	return false;
+}
+
+function tambahGajiKaryawan($data){
+	global $conn;
+	global $sessionCabang;
+	$incomes_expenses = base64_decode($data['incomes_expenses']);
+	$jenis = 'gaji_karyawan';
+	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
+	$id_karyawan = base64_decode($data['karyawan']);
+	$periode = $data['periode'];
+	$tanggal = $data['periode'] . '-' . date('d');
+	$kddh = $data['kddh'] != '' ? $data['kddh'] : 0;
+	$bonus_omset = $data['bonus_omset'] != '' ? $data['bonus_omset'] : 0;
+	$salary = $data['salary'] != '' ? $data['salary'] : 0;
+	$overtime = $data['overtime'] != '' ? $data['overtime'] : 0;
+	$day = $data['day'];
+	$total = $kddh + $bonus_omset + $salary + $overtime;
+	$created_at = date('Y-m-d H:i:s');
+	$updated_at = date('Y-m-d H:i:s');
+
+	$conn->begin_transaction();
+	try {
+
+		$karyawan_query = mysqli_query($conn, "SELECT * FROM karyawan WHERE id='$id_karyawan'");
+		$karyawan = mysqli_fetch_assoc($karyawan_query);
+
+		if(!$karyawan){
+			return false;
+		}
+
+		$nama = $karyawan['nama_karyawan'];
+		$query = mysqli_query($conn, "INSERT INTO laba_bersih_detail(incomes_expenses, jenis, nama, total, real_income, jenis_pembayaran, tanggal, cabang, created_at, updated_at)
+					VALUES
+				('$incomes_expenses', '$jenis', '$nama', '$total', 0, '$jenis_pembayaran', '$tanggal', '$sessionCabang', '$created_at', '$updated_at')");
+
+		$laba_bersih_detail_id = $conn->insert_id;
+
+		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+		if(!$laba_bersih){
+			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+				VALUES
+				(0, $total, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+		} else {
+			$total_laba_gaji = $laba_bersih['lb_pengeluaran_gaji'] + $total;
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		}
+
+		mysqli_query($conn, "INSERT INTO gaji_karyawan(id_karyawan, periode, day, kddh, bonus_omset, salary, overtime, thp, laba_bersih_detail_id, cabang, created_at, updated_at)
+					VALUES
+					('$id_karyawan', '$periode', '$day', '$kddh', '$bonus_omset', '$salary', '$overtime', '$total', '$laba_bersih_detail_id', '$sessionCabang', '$created_at', '$updated_at')");
+					
+		$conn->commit();
+		return true;
+	} catch (mysqli_sql_exception $exception) {
+		$conn->rollback();
+		throw $exception;
+	}
+
+	return false;
+}
+
+function updateGajiKaryawan($data){
+	global $conn;
+	global $sessionCabang;
+	$id = base64_decode($data['id']);
+	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
+	$id_karyawan = base64_decode($data['karyawan']);
+	$periode = $data['periode'];
+	$tanggal = $data['periode'] . '-' . '01';
+	$kddh = $data['kddh'] != '' ? $data['kddh'] : 0;
+	$bonus_omset = $data['bonus_omset'] != '' ? $data['bonus_omset'] : 0;
+	$salary = $data['salary'] != '' ? $data['salary'] : 0;
+	$overtime = $data['overtime'] != '' ? $data['overtime'] : 0;
+	$day = $data['day'];
+	$total = $kddh + $bonus_omset + $salary + $overtime;
+	$created_at = date('Y-m-d H:i:s');
+	$updated_at = date('Y-m-d H:i:s');
+
+	$conn->begin_transaction();
+	try {
+
+		$karyawan_query = mysqli_query($conn, "SELECT * FROM karyawan WHERE id='$id_karyawan'");
+		$karyawan = mysqli_fetch_assoc($karyawan_query);
+
+		if(!$karyawan){
+			return false;
+		}
+
+		$lb_dt_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
+		$lb_dt = mysqli_fetch_assoc($lb_dt_query);
+
+		$nama = $karyawan['nama_karyawan'];
+		mysqli_query($conn, "UPDATE laba_bersih_detail SET nama='$nama', total='$total', jenis_pembayaran='$jenis_pembayaran', tanggal='$tanggal', updated_at='$updated_at' WHERE id='$id' AND cabang='$sessionCabang'");
+
+		$laba_bersih_detail_id = $lb_dt['id'];
+
+		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+		if(!$laba_bersih){
+			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+				VALUES
+				(0, $total, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+		} else {
+			$total_laba_gaji = ($laba_bersih['lb_pengeluaran_gaji'] - $lb_dt['total']) + $total;
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		}
+
+		mysqli_query($conn, "UPDATE gaji_karyawan SET id_karyawan='$id_karyawan', periode='$periode', day='$day', kddh='$kddh', bonus_omset='$bonus_omset', salary='$salary', overtime='$overtime', thp='$total', updated_at='$updated_at' WHERE laba_bersih_detail_id='$laba_bersih_detail_id' AND cabang='$sessionCabang'");
+					
+		$conn->commit();
+		return true;
+	} catch (mysqli_sql_exception $exception) {
+		$conn->rollback();
+		throw $exception;
+	}
+
+	return false;
+}
+
+function deleteIncomesExpenses($data){
+	global $conn;
+	global $sessionCabang;
+	$jenis = base64_decode($data['type']);
+	$id = base64_decode($data['delete']);
+	$incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
+
+	if(mysqli_num_rows($incomes_expenses_query) == 0){
+		return false;
+	}
+
+	$incomes_expenses = mysqli_fetch_assoc($incomes_expenses_query);
+	$ie_tanggal = $incomes_expenses['tanggal'];
+	$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
+	$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+	if($incomes_expenses['incomes_expenses'] == 'pendapatan' && $incomes_expenses['jenis'] == 'revenue'){
+		$conn->begin_transaction();
+		try {
+			$total_laba_pendapatan = $laba_bersih['lb_pendapatan_lain'] - $incomes_expenses['real_income'];
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan' WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
+			$conn->commit();
+			return true;
+		} catch (mysqli_sql_exception $exception) {
+			$conn->rollback();
+			throw $exception;
+		}
+	} else if($incomes_expenses['incomes_expenses'] == 'pengeluaran' && $incomes_expenses['jenis'] == 'gaji_karyawan'){
+		$conn->begin_transaction();
+		try {
+			$total_laba_gaji = $laba_bersih['lb_pengeluaran_gaji'] - $incomes_expenses['total'];
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji' WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
+			mysqli_query($conn, "DELETE FROM gaji_karyawan WHERE laba_bersih_detail_id = '$id' AND cabang='$sessionCabang'");
+			$conn->commit();
+			return true;
+		} catch (mysqli_sql_exception $exception) {
+			$conn->rollback();
+			throw $exception;
+		}
+	} else {
+		$conn->begin_transaction();
+		try {
+			$total_lb_pengeluaran_listrik = $jenis == 'listrik' ? $laba_bersih['lb_pengeluaran_listrik'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_listrik'];
+			$total_lb_pengeluaran_tlpn_internet = $jenis == 'telepon_internet' ? $laba_bersih['lb_pengeluaran_tlpn_internet'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_tlpn_internet'];
+			$total_lb_pengeluaran_perlengkapan_toko = $jenis == 'perlengkapan_toko' ? $laba_bersih['lb_pengeluaran_perlengkapan_toko'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_perlengkapan_toko'];
+			$total_lb_pengeluaran_biaya_penyusutan = $jenis == 'biaya_penyusutan' ? $laba_bersih['lb_pengeluaran_biaya_penyusutan'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_biaya_penyusutan'];
+			$total_lb_pengeluaran_bensin = $jenis == 'bensin' ? $laba_bersih['lb_pengeluaran_bensin'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_bensin'];
+			$total_lb_pengeluaran_tak_terduga = $jenis == 'tak_terduga' ? $laba_bersih['lb_pengeluaran_tak_terduga'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_tak_terduga'];
+			$total_lb_pengeluaran_lain = $jenis == 'lain_lain' ? $laba_bersih['lb_pengeluaran_lain'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_lain'];
+			
+			mysqli_query($conn, "UPDATE laba_bersih
+									SET lb_pengeluaran_listrik='$total_lb_pengeluaran_listrik',
+									lb_pengeluaran_tlpn_internet='$total_lb_pengeluaran_tlpn_internet',
+									lb_pengeluaran_perlengkapan_toko='$total_lb_pengeluaran_perlengkapan_toko',
+									lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
+									lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
+									lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
+									lb_pengeluaran_lain='$total_lb_pengeluaran_lain'
+									WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
+
+			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
+			$conn->commit();
+			return true;
+		} catch (mysqli_sql_exception $exception) {
+			$conn->rollback();
+			throw $exception;
+		}
+	}
+
+	return false;
+}
 
 ?>
-
-
-

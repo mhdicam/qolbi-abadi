@@ -159,6 +159,10 @@ if( isset($_POST["submit"]) ){
                             <label for="barang_stock">Stock</label>
                             <input type="number" name="barang_stock" class="form-control" id="barang_stock" value="<?= $barang['barang_stock']; ?>" required>
                           </div>
+                          <div class="form-group">
+                            <label for="barang_harga_beli">Harga Beli</label>
+                            <input type="number" name="barang_harga_beli" class="form-control" id="barang_harga_beli" value="<?= $barang['barang_harga_beli'] ?>" placeholder="Input Harga Beli" required>
+                          </div>
                       </div>
                     </div>
                   </div>

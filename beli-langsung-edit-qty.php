@@ -2,7 +2,7 @@
   include 'aksi/halau.php'; 
   include 'aksi/functions.php';
   $id       = $_POST['id'];
-  $customer = $_GET['customer'];
+  $customer_category = base64_decode($_GET['customer_category']);
 
   $keranjang = query("SELECT * FROM keranjang WHERE keranjang_id = $id")[0];
   $keranjang_satuan           = $keranjang['keranjang_satuan'];
@@ -59,11 +59,11 @@
   $dataHarga = mysqli_fetch_array($dataHarga);
   $barang_harga = $dataHarga['barang_harga'];
   // kondisi berdasarkan customer umum, grosir 1 & grosir 2
-  if ( $customer == 1 ) {
+  if ( $customer_category == 1 ) {
       $barang_harga_satuan_1          = $dataHarga['barang_harga_grosir_1'];
       $barang_harga_satuan_2          = $dataHarga['barang_harga_grosir_1_s2'];
       $barang_harga_satuan_3          = $dataHarga['barang_harga_grosir_1_s3'];
-  } elseif ( $customer == 2 ) {
+  } elseif ( $customer_category == 2 ) {
       $barang_harga_satuan_1          = $dataHarga['barang_harga_grosir_2'];
       $barang_harga_satuan_2          = $dataHarga['barang_harga_grosir_2_s2'];
       $barang_harga_satuan_3          = $dataHarga['barang_harga_grosir_2_s3'];
@@ -75,7 +75,7 @@
 ?>
 
 
-	<input type="hidden" name="keranjang_id" value="<?= $id; ?>">
+    <input type="hidden" name="keranjang_id" value="<?= $id; ?>">
   <input type="hidden" name="stock_brg" value="<?= $tb_brg; ?>">
   <input type="hidden" name="keranjang_qty" value="<?= $barang['keranjang_qty']; ?>">
   <input type="hidden" name="keranjang_barang_option_sn" value="<?= $keranjang_barang_option_sn; ?>">

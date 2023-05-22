@@ -6,14 +6,17 @@
 
 <?php  
   $userId = $_SESSION['user_id'];
-  $tipeHarga = base64_decode($_GET['customer']);
-  if ( $tipeHarga == 1 ) {
-      $nameTipeHarga = "Grosir 1";
-  } elseif ( $tipeHarga == 2 ) {
-      $nameTipeHarga = "Grosir 2";
-  } else {
-      $nameTipeHarga = "Umum";
-  }
+  $tipeHarga = isset($_GET['customer_category']) ? base64_decode($_GET['customer_category']) : 0;
+  $cust = isset($_GET['customer']) ? base64_decode($_GET['customer']) : '';
+  // $tipeHarga = 1;
+  $nameTipeHarga = "Grosir 1";
+  // if ( $tipeHarga == 1 ) {
+  //     $nameTipeHarga = "Grosir 1";
+  // } elseif ( $tipeHarga == 2 ) {
+  //     $nameTipeHarga = "Grosir 2";
+  // } else {
+  //     $nameTipeHarga = "Umum";
+  // }
 
   if ( $levelLogin === "kurir") {
     echo "
@@ -165,7 +168,8 @@ if( isset($_POST["updateStockDraft"]) ){
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-8">
-            <h1>Transaksi Kasir <b style="color: #007bff; ">Customer <?= $nameTipeHarga; ?></b></h1>
+            <!-- <h1>Transaksi Kasir <b style="color: #007bff; ">Customer <?= $nameTipeHarga; ?></b></h1> -->
+            <h1>Transaksi Kasir</h1>
             <div class="btn-cash-piutang">
               <?php  
                 // Ambil data dari URL Untuk memberikan kondisi transaksi Cash atau Piutang
@@ -177,11 +181,11 @@ if( isset($_POST["updateStockDraft"]) ){
               ?>
 
               <?php if ( $r == 1 ) : ?>
-              <a href="beli-langsung?customer=<?= $_GET['customer']; ?>" class="btn btn-default">Cash</a>
-              <a href="beli-langsung?customer=<?= $_GET['customer']; ?>&r=MQ==" class="btn btn-primary">Piutang</a>
+              <a href="beli-langsung" class="btn btn-default">Cash</a>
+              <a href="beli-langsung?r=MQ==" class="btn btn-primary">Piutang</a>
               <?php else : ?>
-              <a href="beli-langsung?customer=<?= $_GET['customer']; ?>" class="btn btn-primary">Cash</a>
-              <a href="beli-langsung?customer=<?= $_GET['customer']; ?>&r=MQ==" class="btn btn-default">Piutang</a>
+              <a href="beli-langsung" class="btn btn-primary">Cash</a>
+              <a href="beli-langsung?r=MQ==" class="btn btn-default">Piutang</a>
               <?php endif; ?>
               <a class="btn btn-danger" data-toggle="modal" href='#modal-id-draft' data-backdrop="static">Pending</a>
               <div class="modal fade" id="modal-id-draft">
@@ -229,7 +233,7 @@ if( isset($_POST["updateStockDraft"]) ){
                                   ?> 
                               </td>
                               <td class="orderan-online-button">
-                                <a href="beli-langsung-draft?customer=<?= base64_encode($row['invoice_customer_category']); ?>&r=<?= base64_encode($row['invoice_piutang']); ?>&invoice=<?= base64_encode($row['penjualan_invoice']); ?>" title="Edit Data">
+                                <a href="beli-langsung-draft?customer=<?= base64_encode($row['invoice_customer']) ?>&customer_category=<?= base64_encode($row['invoice_customer_category']); ?>&r=<?= base64_encode($row['invoice_piutang']); ?>&invoice=<?= base64_encode($row['penjualan_invoice']); ?>" title="Edit Data">
                                       <button class="btn btn-primary" type="submit">
                                          <i class="fa fa-edit"></i>
                                       </button>
@@ -307,7 +311,7 @@ if( isset($_POST["updateStockDraft"]) ){
                             </form>
                         </div>
                         <div class="col-2">
-                            <a class="btn btn-primary" title="Cari Produk" data-toggle="modal" id="cari-barang" href='#modal-id'>
+                            <a class="btn btn-primary btn-search-product" title="Cari Produk" data-toggle="modal" id="cari-barang" href='#modal-id'>
                                <i class="fa fa-search"></i>
                             </a>
                         </div>
@@ -421,20 +425,26 @@ if( isset($_POST["updateStockDraft"]) ){
                     <div class="col-md-6 col-lg-7">
                         <div class="filter-customer">
                           <div class="form-group">
-                            <label>Customer <b style="color: #007bff; "><?= $nameTipeHarga; ?></b></label>
-                            <select class="form-control select2bs4 pilihan-marketplace" required="" name="invoice_customer">
+                              <label>Tanggal</label>
+                              <input type="date" value="<?= date('Y-m-d') ?>" class="form-control" required name="tanggal">
+                          </div>
+                          <div class="form-group">
+                            <!-- <label>Customer <b style="color: #007bff; "><?= $nameTipeHarga; ?></b></label> -->
+                            <label>Customer</label>
+                            <select class="form-control pilihan-marketplace select-customer" required="" name="invoice_customer">
                               <!-- <option selected="selected" value="">Pilih Customer</option> -->
 
-                              <?php if ( $r != 1 && $tipeHarga < 1 ) { ?>
-                              <option value="0">Umum</option>
-                              <?php } ?>
+                              <?php //if ( $r != 1 && $tipeHarga < 1 ) { ?>
+                                <option data-id="<?= base64_encode('0') ?>" data-category="0" data-category-enc="<?= base64_encode('0') ?>" value="0" <?= $cust == 0 ? 'selected' : '' ?>>Umum</option>
+                              <?php //} ?>
 
                               <?php  
-                                $customer = query("SELECT * FROM customer WHERE customer_cabang = $sessionCabang && customer_status = 1 && customer_category = $tipeHarga ORDER BY customer_id DESC ");
+                                // $customer = query("SELECT * FROM customer WHERE customer_cabang = $sessionCabang && customer_status = 1 && customer_category = $tipeHarga ORDER BY customer_id DESC ");
+                                $customer = query("SELECT * FROM customer WHERE customer_cabang = $sessionCabang && customer_status = 1 ORDER BY customer_id DESC ");
                               ?>
                               <?php foreach ( $customer as $ctr ) : ?>
                                 <?php if ( $ctr['customer_id'] > 1 && $ctr['customer_nama'] !== "Customer Umum" ) { ?>
-                                <option value="<?= $ctr['customer_id'] ?>"><?= $ctr['customer_nama'] ?></option>
+                                  <option data-id="<?= base64_encode($ctr['customer_id']) ?>" data-category="<?= $ctr['customer_category'] ?>" data-category-enc="<?= base64_encode($ctr['customer_category']) ?>" value="<?= $ctr['customer_id'] ?>"  <?= $cust == $ctr['customer_id'] ? 'selected' : '' ?>><?= $ctr['customer_nama'] ?></option>
                                 <?php } ?>
                               <?php endforeach; ?>
                             </select>
@@ -680,7 +690,7 @@ if( isset($_POST["updateStockDraft"]) ){
                                   <input type="hidden" name="keranjang_id_kasir[]" value="<?= $stk['keranjang_id_kasir']; ?>">
 
                                   <input type="hidden" name="penjualan_invoice[]" value="<?= $di; ?>">
-                                  <input type="hidden" name="penjualan_date[]" value="<?= date("Y-m-d") ?>">
+                                  <!-- <input type="hidden" name="penjualan_date[]" value=""> -->
 
                                   <input type="hidden" name="keranjang_barang_option_sn[]" value="<?= $stk['keranjang_barang_option_sn']; ?>">
                                   <input type="hidden" name="keranjang_barang_sn_id[]" value="<?= $stk['keranjang_barang_sn_id']; ?>">
@@ -751,7 +761,7 @@ if( isset($_POST["updateStockDraft"]) ){
                 <!-- /.card-header -->
                 <div class="card-body">
                   <div class="table-auto">
-                    <table id="example1" class="table table-bordered table-striped" style="width: 100%;">
+                    <table id="modal-product-table" class="table table-bordered table-striped" style="width: 100%;">
                       <thead>
                       <tr>
                         <th style="width: 5%;">No.</th>
@@ -759,8 +769,9 @@ if( isset($_POST["updateStockDraft"]) ){
                         <th>Nama</th>
                         <th>
                           <?php  
-                            echo "Harga <b style='color: #007bff;'>".$nameTipeHarga."</b>";
+                            // echo "Harga <b style='color: #007bff;'>".$nameTipeHarga."</b>";
                           ?>
+                          Harga
                         </th>
                         <th>Stock</th>
                         <th style="text-align: center;">Aksi</th>
@@ -831,56 +842,65 @@ if( isset($_POST["updateStockDraft"]) ){
   </div>
 
   <script>
-    $(document).ready(function(){
-        var table = $('#example1').DataTable( { 
-             "processing": true,
-             "serverSide": true,
-
-             <?php if ( $tipeHarga == 1 ) : ?>
-              "ajax": "beli-langsung-search-data-grosir-1.php?cabang=<?= $sessionCabang; ?>",
-             <?php elseif ( $tipeHarga == 2 ) : ?>
-              "ajax": "beli-langsung-search-data-grosir-2.php?cabang=<?= $sessionCabang; ?>",
-             <?php else : ?>
-              "ajax": "beli-langsung-search-data.php?cabang=<?= $sessionCabang; ?>",
-             <?php endif; ?>
-
-             "columnDefs": 
-             [
-              {
-                "targets": 3,
-                  "render": $.fn.dataTable.render.number( '.', '', '', 'Rp. ' )
-                 
-              },
-              {
-                "targets": -1,
-                  "data": null,
-                  "defaultContent": 
-                  `<center>
-
-                      <button class='btn btn-primary tblInsert' title="Tambah Keranjang">
-                         <i class="fa fa-shopping-cart"></i> Pilih
-                      </button>
-
-                  </center>` 
-              }
-            ]
+      $(function(){
+        $('.select-customer').select2({
+          theme: 'bootstrap4',
         });
 
-        table.on('draw.dt', function () {
-            var info = table.page.info();
-            table.column(0, { search: 'applied', order: 'applied', page: 'applied' }).nodes().each(function (cell, i) {
-                cell.innerHTML = i + 1 + info.start;
-            });
-        });
+        $('.btn-search-product').on('click', function(){
+          const custCategory = $(".select-customer").find(":selected").data("category");
+          let dataGrosirUrl = "beli-langsung-search-data.php?cabang=<?= $sessionCabang; ?>"
+          if(custCategory === 1){
+            dataGrosirUrl = "beli-langsung-search-data-grosir-1.php?cabang=<?= $sessionCabang; ?>"
+          } else if(custCategory === 2){
+            dataGrosirUrl = "beli-langsung-search-data.php?cabang=<?= $sessionCabang; ?>"
+          }
 
-        $('#example1 tbody').on( 'click', '.tblInsert', function () {
+          
+          $('#modal-product-table').DataTable().clear();
+          $('#modal-product-table').DataTable().destroy();
+          var table = $('#modal-product-table').DataTable( { 
+                "processing": true,
+                "serverSide": true,
+                "ajax": dataGrosirUrl,
+                "columnDefs":
+                [
+                  {
+                    "targets": 3,
+                      "render": $.fn.dataTable.render.number( '.', '', '', 'Rp. ' )
+                  },
+                  {
+                    "targets": -1,
+                      "data": null,
+                      "defaultContent": 
+                      `<center>
+
+                          <button class='btn btn-primary tblInsert' title="Tambah Keranjang">
+                            <i class="fa fa-shopping-cart"></i> Pilih
+                          </button>
+
+                      </center>` 
+                  }
+                ]
+          });
+
+          table.on('draw.dt', function () {
+              var info = table.page.info();
+              table.column(0, { search: 'applied', order: 'applied', page: 'applied' }).nodes().each(function (cell, i) {
+                  cell.innerHTML = i + 1 + info.start;
+              });
+          });
+          
+          $('#modal-product-table tbody').on( 'click', '.tblInsert', function () {
             var data = table.row( $(this).parents('tr')).data();
             var data0 = data[0];
             var data0 = btoa(data0);
-            window.location.href = "beli-langsung-add?id="+ data0 + "&customer=<?= $_GET['customer']; ?>&r=<?= $r; ?>";
+            const custCategoryEncode = $(".select-customer").find(":selected").data("category-enc");
+            const custEncode = $(".select-customer").find(":selected").data("id");
+            window.location.href = "beli-langsung-add?id="+ data0 + "&customer_category="+ custCategoryEncode +"&customer=" + custEncode + "&r=<?= $r; ?>";
+          });
         });
-
-    });
+      });
   </script>
 
 <?php include '_footer.php'; ?>
@@ -980,7 +1000,6 @@ if( isset($_POST["updateStockDraft"]) ){
 </script>
 <script>
   $(function () {
-
     //Initialize Select2 Elements
     $('.select2bs4').select2({
       theme: 'bootstrap4'
@@ -1018,8 +1037,11 @@ if( isset($_POST["updateStockDraft"]) ){
       // Memanggil Pop Up Data Edit QTY
       $(document).on('click','#keranjang-qty',function(e){
           e.preventDefault();
+          
+          const custCategoryEncode = $(".select-customer").find(":selected").data("category-enc");
+          const custEncode = $(".select-customer").find(":selected").data("id");
           $("#modal-id-2").modal('show');
-          $.post('beli-langsung-edit-qty.php?customer=<?= $tipeHarga; ?>',
+          $.post(`beli-langsung-edit-qty.php?customer_category=${custCategoryEncode}&customer=${custEncode}`,
             {id:$(this).attr('data-id')},
             function(html){
               $("#data-keranjang-qty").html(html);
@@ -1031,7 +1053,7 @@ if( isset($_POST["updateStockDraft"]) ){
       $(document).on('click','#keranjang-harga',function(e){
           e.preventDefault();
           $("#modal-id-2").modal('show');
-          $.post('beli-langsung-edit-harga.php?customer=<?= $tipeHarga; ?>',
+          $.post(`beli-langsung-edit-harga.php?customer_category=${custCategoryEncode}&customer=${custEncode}`,
             {id:$(this).attr('data-id')},
             function(html){
               $("#data-keranjang-harga").html(html);

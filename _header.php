@@ -55,6 +55,7 @@
 
   <!-- Export Excel -->
   <link rel="stylesheet" type="text/css" href="dist/css/tableexport.min.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css">
   <style>
     caption.tableexport-caption {
       caption-side: top !important;

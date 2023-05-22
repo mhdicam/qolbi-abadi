@@ -45,7 +45,8 @@ if( isset($_POST["submit"]) ){
 ?>
 
 <?php  
-  $labaBersih = query("SELECT * FROM laba_bersih WHERE lb_cabang = $sessionCabang")[0];
+  $labaBersih = query("SELECT * FROM laba_bersih WHERE lb_cabang = $sessionCabang");
+  $labaBersih = $labaBersih ? $labaBersih[0] : null
 ?>
 
   <!-- Content Wrapper. Contains page content -->

@@ -40,7 +40,7 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item has-treeview">
+              <!-- <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>
@@ -68,6 +68,12 @@
                     </a>
                   </li>
                 </ul>
+              </li> -->
+              <li class="nav-item">
+                <a href="beli-langsung" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Kasir</p>
+                </a>
               </li>
               <li class="nav-item">
                 <a href="customer" class="nav-link">
@@ -249,6 +255,12 @@
                   <p>Barang</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="karyawan" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Karyawan</p>
+                </a>
+              </li>
               <!-- <li class="nav-item">
                 <a href="ekspedisi" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -314,11 +326,18 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a href="incomes-expenses" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Incomes/Expenses</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="laba-bersih-laporan" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Laporan Laba Bersih</p>
                 </a>
               </li>
+              
             </ul>
           </li>
           <?php } ?>
