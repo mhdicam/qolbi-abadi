@@ -76,7 +76,7 @@
 					</div>
 				</form>
 
-				<div class="login100-more" style="background-image: url('assets-login/images/bg-02.jpg');">
+				<div class="login100-more" style="background-image: url('assets-login/images/logo-lana.jpg');">
 				</div>
 			</div>
 		</div>
