@@ -22,7 +22,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
   <!-- Favicon -->
-  <link rel="icon" type="img/png" sizes="32x32" href="assets-login/images/qa.jpg">
+  <link rel="icon" type="img/png" sizes="32x32" href="assets-login/images/logo-lana.jpg">
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="dist/css/font-awesome.min.css">
   <!-- Ionicons -->
