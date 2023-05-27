@@ -13,13 +13,14 @@
           </script>
         ";
     }
-    if ( $levelLogin !== "super admin") {
-    echo "
-      <script>
-        document.location.href = 'bo';
-      </script>
-    ";
-  }
+
+    if ( $levelLogin == "kasir" || $levelLogin == "kurir" ) {
+      echo "
+        <script>
+          document.location.href = 'bo';
+        </script>
+      ";
+    }
 
 
 $cabang = base64_encode($id);

@@ -101,7 +101,7 @@
 					<div class="col-sm-6 col-md-6 col-lg-6 col-padding">
 						<div class="nbi-text">
 							<div class="nbi-text-parent">
-								<b>Tanggal:</b> <?= $invoice['invoice_tgl']; ?>
+								<b>Tanggal:</b> <?= date('d F Y', strtotime($invoice['invoice_date'])) ?>
 							</div>
 							<div class="nbi-text-parent">
 								<b>Invoice:</b> <?= $invoice['pembelian_invoice']; ?>

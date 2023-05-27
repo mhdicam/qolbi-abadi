@@ -6,8 +6,12 @@ if($_POST && $_SESSION['user_id'] != null){
     $cabang = $sessionCabang;
     $date_now = date('Y-m-d');
     $date_filter = isset($_POST['date']) ? $_POST['date'] : $date_now;
-    $month_only_filter = date('m', strtotime($date_filter));
-    $year_only_filter = date('Y', strtotime($date_filter));
+    $start_date = isset($_POST['start_date']) ? $_POST['start_date'] : $date_now;
+    $end_date = isset($_POST['end_date']) ? $_POST['end_date'] : $date_now;
+    $start_month_only_filter = date('m', strtotime($start_date));
+    $end_month_only_filter = date('m', strtotime($end_date));
+    $start_year_only_filter = date('Y', strtotime($start_date));
+    $end_year_only_filter = date('Y', strtotime($end_date));
     $incomes_expenses_decode = $_POST['incomes-expenses'] ? base64_decode($_POST['incomes-expenses']) : 'pendapatan';
     $jenis_decode = $_POST['type'] ? base64_decode($_POST['type']) : 'revenue';
 
@@ -19,7 +23,9 @@ if($_POST && $_SESSION['user_id'] != null){
             $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
                                                             LEFT JOIN laba_bersih_detail as b ON a.laba_bersih_detail_id = b.id
                                                             LEFT JOIN karyawan as c ON c.id = a.id_karyawan
-                                                            WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND MONTH(b.tanggal) = '$month_only_filter' AND YEAR(b.tanggal) = '$year_only_filter' AND b.cabang='$cabang'");
+                                                            WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
+                                                            AND MONTH(b.tanggal) >= '$start_month_only_filter' AND MONTH(b.tanggal) <= '$end_month_only_filter'
+                                                            AND YEAR(b.tanggal) >= '$start_year_only_filter' AND b.cabang='$cabang' AND YEAR(b.tanggal) <= '$end_year_only_filter'");
 
             while($row = mysqli_fetch_assoc($incomes_expenses_query)){
                 $arr_data[] = [
@@ -42,7 +48,7 @@ if($_POST && $_SESSION['user_id'] != null){
             }
 
         } elseif($incomes_expenses_decode == 'pendapatan'){
-            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pendapatan' AND jenis='$jenis_decode' AND tanggal='$date_filter' AND cabang='$cabang'");
+            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pendapatan' AND jenis='$jenis_decode' AND cabang='$cabang' AND tanggal>='$start_date' AND tanggal<='$end_date'");
             while($row = mysqli_fetch_assoc($incomes_expenses_query)){
                 $arr_data[] = [
                     'id' => base64_encode($row['id']),
@@ -56,7 +62,7 @@ if($_POST && $_SESSION['user_id'] != null){
                 $grand_total += $row['real_income'];
             }
         } else {
-            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='$jenis_decode' AND tanggal='$date_filter' AND cabang='$cabang'");
+            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='$jenis_decode' AND cabang='$cabang' AND tanggal>='$start_date' AND tanggal<='$end_date'");
             while($row = mysqli_fetch_assoc($incomes_expenses_query)){
                 $arr_data[] = [
                     'id' => base64_encode($row['id']),
@@ -87,9 +93,9 @@ if($_POST && $_SESSION['user_id'] != null){
 
             
         } elseif($incomes_expenses_decode == 'pendapatan'){
-            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pendapatan' AND jenis='$jenis_decode' AND tanggal='$date_filter' AND cabang='$cabang' AND id='$id'");
+            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pendapatan' AND jenis='$jenis_decode' AND cabang='$cabang' AND id='$id'");
         } else {
-            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='$jenis_decode' AND tanggal='$date_filter' AND cabang='$cabang' AND id='$id'");
+            $incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='$jenis_decode' AND cabang='$cabang' AND id='$id'");
         }
 
         if(mysqli_num_rows($incomes_expenses_query) > 0){
@@ -102,6 +108,19 @@ if($_POST && $_SESSION['user_id'] != null){
             $data['harga'] = number_format($data['harga'], 0, ',', '');
             $data['qty'] = $data['qty'];
             $data['real_income'] = number_format($data['real_income'], 0, ',', '');
+
+            if($jenis_decode == 'perlengkapan_toko'){
+                $penambahan_aset_query = mysqli_query($conn, "SELECT * FROM penambahan_aset WHERE id_laba_bersih_detail='$id' AND cabang='$cabang'");
+                $row_aset = [];
+                while($row = mysqli_fetch_assoc($penambahan_aset_query)){
+                    $row_aset[] = [
+                        'nama_barang' => $row['nama_barang'],
+                        'qty' => $row['qty']
+                    ];
+                }
+                $data['aset'] = $row_aset;
+            }
+
             unset($data['cabang']);
             unset($data['incomes_expenses']);
             unset($data['jenis']);

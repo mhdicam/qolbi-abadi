@@ -17,7 +17,7 @@ $table = <<<EOT
     SELECT 
       a.invoice_id, 
       a.penjualan_invoice,
-      a.invoice_tgl, 
+      a.invoice_date, 
       a.invoice_sub_total, 
       a.invoice_cabang, 
       a.invoice_kasir, 
@@ -42,7 +42,7 @@ $primaryKey = 'invoice_id';
 $columns = array( 
     array( 'db' => 'invoice_id', 'dt'         => 0 ),
     array( 'db' => 'penjualan_invoice', 'dt'  => 1 ), 
-    array( 'db' => 'invoice_tgl',  'dt'       => 2 ), 
+    array( 'db' => 'invoice_date',  'dt'       => 2 ), 
     array( 'db' => 'customer_nama',      'dt' => 3 ),
     array( 'db' => 'user_nama',      'dt'     => 4 ), 
     array( 'db' => 'invoice_sub_total',  'dt' => 5 )

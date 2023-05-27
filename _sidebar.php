@@ -120,7 +120,7 @@
           </li>
           <?php } ?>
 
-          <?php if ( $levelLogin !== "kasir" && $levelLogin !== "kurir" ) { ?>
+          <?php if ($levelLogin !== "kurir" ) { ?>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fa fa-shopping-bag"></i>
@@ -517,6 +517,18 @@
               <?php } ?>
             </ul>
           </li>
+          <?php } ?>
+
+          <?php if ( $levelLogin === "admin" ) { ?>
+            <li class="nav-header">SETTINGS</li>
+            <li class="nav-item">
+              <a href="user-type" class="nav-link">
+                <i class="nav-icon fa fa-users"></i> 
+                <p>
+                  Users
+                </p>
+              </a>
+            </li>
           <?php } ?>
 
           <?php if ( $levelLogin === "super admin" ) { ?>

@@ -4,8 +4,18 @@
   include '_sidebar.php'; 
 ?>
 
-<?php  
-  if ( $levelLogin !== "super admin" ) {
+<?php
+  if ( $levelLogin === "admin" ) {
+    $query_toko = mysqli_query($conn, "SELECT * FROM toko WHERE toko_cabang = '$sessionCabang' AND toko_status > 0");
+    $row_toko = mysqli_fetch_assoc($query_toko);
+      echo "
+        <script>
+          document.location.href = 'users?cabang=".base64_encode($row_toko['toko_cabang']).strtolower(str_replace(' ', '-', $row_toko['toko_nama']))."';
+        </script>
+      ";
+  }
+
+  else if ( $levelLogin !== "super admin") {
     echo "
       <script>
         document.location.href = 'bo';

@@ -151,9 +151,9 @@
                                         <td>: 
                                             <?php  
                                                 if ( $tipeTransaksi < 1 ) {
-                                                    echo "Cash - ".$invoice['invoice_tgl'];
+                                                    echo "Cash - ". date('d F Y', strtotime($invoice['invoice_date']));
                                                 } else {
-                                                    echo "Piutang - ".$invoice['invoice_tgl'];
+                                                    echo "Piutang - ". date('d F Y', strtotime($invoice['invoice_date']));
                                                 }
                                             ?>
                                         </td>

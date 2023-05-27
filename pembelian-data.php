@@ -18,7 +18,7 @@ $table = <<<EOT
       a.invoice_pembelian_id, 
       a.pembelian_invoice, 
       a.pembelian_invoice_parent, 
-      a.invoice_tgl, 
+      a.invoice_date, 
       a.invoice_pembelian_cabang, 
       a.invoice_supplier,
       a.invoice_total, 
@@ -41,7 +41,7 @@ $primaryKey = 'invoice_pembelian_id';
 $columns = array( 
     array( 'db' => 'invoice_pembelian_id', 'dt' => 0 ),
     array( 'db' => 'pembelian_invoice', 'dt' => 1 ), 
-    array( 'db' => 'invoice_tgl',  'dt' => 2 ), 
+    array( 'db' => 'invoice_date',  'dt' => 2 ), 
     array( 'db' => 'supplier_company',      'dt' => 3 ), 
     array( 'db' => 'invoice_total',     'dt' => 4 ), 
     array( 'db' => 'invoice_bayar',    'dt' => 5 ),

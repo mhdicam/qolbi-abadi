@@ -48,7 +48,7 @@
                 <div class="col-12">
                   <h4>
                     <i class="fas fa-globe"></i> N0. Invoice: <?= $invoice['penjualan_invoice']; ?>
-                    <small class="float-right">Tanggal: <?= $invoice['invoice_tgl']; ?></small>
+                    <small class="float-right">Tanggal: <?= date('d F Y', strtotime($invoice['invoice_date'])); ?></small>
                   </h4>
                 </div>
                 <!-- /.col -->

@@ -103,7 +103,7 @@
 					<div class="col-sm-7 col-md-7 col-lg-7 col-padding">
 						<div class="nbi-text">
 							<div class="nbi-text-parent">
-								<b>Tanggal:</b> <?= $invoice['invoice_tgl']; ?>
+								<b>Tanggal:</b> <?= date('d F Y', strtotime($invoice['invoice_date'])); ?>
 							</div>
 							<div class="nbi-text-parent">
 								<b>Invoice:</b> <?= $invoice['penjualan_invoice']; ?>

@@ -32,9 +32,9 @@
             }
         }
 
-        if($_POST['incomes_expenses'] == 'cGVuZGFwYXRhbg==' && $_POST['type'] == 'cmV2ZW51ZQ=='){
+        if($_POST['incomes_expenses'] == 'cGVuZGFwYXRhbg=='){
             if(!$_POST['id']){
-                if(tambahRevenue($_POST)){
+                if(tambahPendapatan($_POST)){
                     echo "
                         <script>
                             document.location.href = '?incomes-expenses=$incomes_expenses&type=$type';
@@ -48,7 +48,7 @@
                     ";
                 }
             } else {
-                if(updateRevenue($_POST)){
+                if(updatePendapatan($_POST)){
                     echo "
                         <script>
                             document.location.href = '?incomes-expenses=$incomes_expenses&type=$type';
@@ -127,9 +127,10 @@
         }
         
     }
-
-    $date_now = date('Y-m-d');
-    $date_filter = $_GET['date'] ? $_GET['date'] : $date_now;
+    
+    $start_date = $_GET['start_date'] ? date('d M Y', strtotime($_GET['start_date'])) : date('d M Y');
+    $end_date = $_GET['end_date'] ? date('d M Y', strtotime($_GET['end_date'])) : date('d M Y');
+    $max_date = date('d M Y');
 
 ?>
 
@@ -161,7 +162,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <form class="form-filter">
                                     <div class="form-group">
                                         <select class="form-control select-incomes-expenses" name="incomes-expenses">
@@ -182,22 +183,25 @@
                                                 <option value="<?= base64_encode('lain_lain') ?>" <?= $_GET['type'] == base64_encode('lain_lain') ? 'selected' : '' ?>>Lain-lain</option>
                                             <?php else: ?>
                                                 <option value="<?= base64_encode('revenue') ?>"<?= $_GET['type'] == base64_encode('revenue') ? 'selected' : '' ?>>Revenue</option>
+                                                <option value="<?= base64_encode('pendapatan_lain') ?>"<?= $_GET['type'] == base64_encode('pendapatan_lain') ? 'selected' : '' ?>>Pendapatan Lain</option>
                                             <?php endif ?>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <input type="date" class="form-control date-filter" name="date" placeholder="Filter Tanggal" value="<?= $date_filter ?>">
+                                        <input type="text" class="form-control date-filter" placeholder="Filter Tanggal">
+                                        <input type="hidden" name="start_date" class="form-control hidden start-date" value="<?= date('Y-m-d', strtotime($start_date)) ?>">
+                                        <input type="hidden" name="end_date" class="form-control hidden end-date" value="<?= date('Y-m-d', strtotime($end_date)) ?>">
                                     </div>
                                 </form>
                             </div>
-                            <div class="col-md-9 text-right">
+                            <div class="col-md-8 text-right">
                                 <div class="tambah-data">
                                     <button class="btn btn-primary btn-add">Tambah Data</button>
                                 </div>
                             </div>
                         </div>
                         <div class="table-auto mt-4">
-                            <table class="table table-bordered table-striped incomes-expenses-table pendapatan-revenue-table <?= ($_GET['incomes-expenses'] == 'cGVuZGFwYXRhbg==' && $_GET['type'] == 'cmV2ZW51ZQ==') | (!$_GET['incomes-expenses'] && !$_GET['type']) ? '' : 'd-none' ?>">
+                            <table class="table table-bordered table-striped incomes-expenses-table pendapatan-revenue-table <?= ($_GET['incomes-expenses'] == 'cGVuZGFwYXRhbg==') | (!$_GET['incomes-expenses'] && !$_GET['type']) ? '' : 'd-none' ?>">
                                 <thead>
                                     <tr>
                                         <th>No.</th>
@@ -298,6 +302,10 @@
                     <input type="hidden" name="incomes_expenses" value="" class="input-incomes-expenses">
                     <input type="hidden" name="id" value="" class="input-id" id="id">
                     <div class="form-group">
+                        <label for="jenis-pendapatan">Jenis Pendapatan</label>
+                        <input type="text" id="jenis-pendapatan" class="form-control input-jenis-pendapatan" disabled>
+                    </div>
+                    <div class="form-group">
                         <label for="tanggal-transaksi">Tanggal Transaksi</label>
                         <input type="date" id="tanggal-transaksi" class="form-control" name="tanggal" value="<?= $date_now ?>" required>
                     </div>
@@ -361,15 +369,15 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="qty">Qty</label>
-                            <input type="number" id="qty" name="qty" class="form-control" min="1" required>
+                            <input type="number" id="qty" name="qty" class="form-control qty-pengeluaran" min="1" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="harga">Harga</label>
-                            <input type="number" id="harga" name="harga" class="form-control" min="0" required>
+                            <input type="number" id="harga" name="harga" class="form-control harga-pengeluaran" min="0" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="total">Total</label>
-                            <input type="number" id="total" name="total" class="form-control" min="0" required>
+                            <input type="number" id="total" name="total" class="form-control total-pengeluaran bg-white" readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="payment-type">Payment Type</label>
@@ -379,6 +387,27 @@
                                 <option value="<?= base64_encode('Debit') ?>">Debit</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div class="penambahan-aset d-none">
+                        <label>Penambahan Aset</label>
+                        <table class="table table-bordered table-penambahan-aset">
+                            <thead>
+                                <tr>
+                                    <th>Nama Barang</th>
+                                    <th width="30%">Qty</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><input type="text" class="form-control nama-barang" minlength="3"></td>
+                                    <td><input type="number" class="form-control qty-barang" min="1"></td>
+                                    <td class="text-center row-action"><button class="btn btn-success btn-add-asset" type="button" disabled><i class="fa fa-plus"></i></button></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -465,6 +494,8 @@
 
 <?php include '_footer.php'; ?>
 <script src="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
     $(function(){
         initLoad();
@@ -473,11 +504,24 @@
             startView: "months", 
             minViewMode: "months"
         });
+
+        $('.date-filter').daterangepicker({
+            locale: {
+                format: 'DD MMMM YYYY'
+            },
+            startDate: '<?= $start_date ?>',
+            endDate: '<?= $end_date ?>'
+        },
+        function(start, end, label) {
+            $('.start-date').val(start.format('YYYY-MM-DD'));
+            $('.end-date').val(end.format('YYYY-MM-DD'));
+        });
+
         $('.select-incomes-expenses').on('change', function(){
             const t = $(this);
             const v = t.val();
 
-            let ieType = '<option value="<?= base64_encode('revenue') ?>">Revenue</option>';
+            let ieType = '<option value="<?= base64_encode('revenue') ?>">Revenue</option><option value="<?= base64_encode('pendapatan_lain') ?>">Pendapatan Lain</option>';
             let defIeType = '<?= base64_encode('revenue') ?>';
 
             if(v === 'cGVuZ2VsdWFyYW4='){
@@ -504,7 +548,7 @@
             const ieTable = $('.incomes-expenses-table');
 
             ieTable.addClass('d-none');
-            if(selIe.val() === 'cGVuZGFwYXRhbg==' && v === '<?= base64_encode('revenue') ?>'){
+            if(selIe.val() === 'cGVuZGFwYXRhbg=='){
                 $('.pendapatan-revenue-table').removeClass('d-none').find('tbody').html('<tr><td colspan="6" class="text-center">Mengambil data...</td></tr>');
                 $('.pendapatan-revenue-table').find('.grand-total').text('Rp. 0');
             }
@@ -522,6 +566,40 @@
             getIncomesExpensesDatas();
         });
 
+        $('.table-penambahan-aset tfoot tr td .nama-barang').on('change keyup', function(){
+            cekInputPenambahanAset()
+        });
+
+        $('.table-penambahan-aset tfoot tr td .qty-barang').on('change keyup', function(){
+            cekInputPenambahanAset()
+        });
+
+        function cekInputPenambahanAset(){
+            $('.table-penambahan-aset tfoot tr td .btn-add-asset').prop('disabled', true);
+            if($('.table-penambahan-aset tfoot tr td .nama-barang').val() !== '' && $('.table-penambahan-aset tfoot tr td .qty-barang').val() !== ''){
+                if($('.table-penambahan-aset tfoot tr td .qty-barang').val() > 0 && $('.table-penambahan-aset tfoot tr td .nama-barang').val().length >= 3)
+                    $('.table-penambahan-aset tfoot tr td .btn-add-asset').prop('disabled', false);
+            }
+        }
+
+        $('.btn-add-asset').on('click', function(){
+            const namaBarang = $(this).closest('tr').find('nama-barang').val();
+            const qtyBarang = $(this).closest('tr').find('qty-barang').val();
+
+            let cloneEl = $('.table-penambahan-aset tfoot tr').clone();
+            cloneEl.appendTo('.table-penambahan-aset tbody');
+            cloneEl.find('.row-action').html('<button class="btn btn-danger btn-delete-asset"><i class="fa fa-trash"></i></button>');
+            cloneEl.find('.form-control').prop('required', true);
+            cloneEl.find('.form-control.nama-barang').prop('name', 'nama_barang[]');
+            cloneEl.find('.form-control.qty-barang').prop('name', 'qty_barang[]');
+            $('.table-penambahan-aset tfoot tr').find('.form-control').val('');
+            $('.table-penambahan-aset tfoot tr').find('.btn-add-asset').prop('disabled', true);
+        });
+
+        $('.table-penambahan-aset tbody').on('click', 'tr td .btn-delete-asset', function(){
+            $(this).closest('tr').remove();
+        })
+
         $('.btn-add').on('click', function(){
             const selIe = $('.select-incomes-expenses');
             const selTypeIe = $('.select-type-incomes-expenses');
@@ -529,13 +607,15 @@
             const inputIe = $('.input-incomes-expenses');
 
             inputType.val('');
-            if(selIe.val() === 'cGVuZGFwYXRhbg==' && selTypeIe.val() === '<?= base64_encode('revenue') ?>'){
+            if(selIe.val() === 'cGVuZGFwYXRhbg=='){
                 $('#modal-revenue').modal('show');
                 $('#modal-pendapatan-title').text('Tambah Data Incomes');
                 $('.form-pendapatan-revenue').find('#tanggal-transaksi').val('<?= date('Y-m-d') ?>');
+                $('.input-jenis-pendapatan').val(selTypeIe.find('option:selected').text());
             }
 
             else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
+                $('.penambahan-aset').addClass('d-none');
                 if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                     $('#modal-pengeluaran-gaji').modal('show');
                     $('#modal-pengeluaran-gaji-title').text('Tambah Data Gaji Karyawan');
@@ -544,6 +624,10 @@
                     $('#modal-pengeluaran-title').text('Tambah Data Expenses');
                     $('.form-pengeluaran').find('#tanggal-transaksi').val('<?= date('Y-m-d') ?>');
                     $('.input-jenis-pengeluaran').val(selTypeIe.find('option:selected').text());
+                    
+                    if(selTypeIe.val() === 'cGVybGVuZ2thcGFuX3Rva28=' ){
+                        $('.penambahan-aset').removeClass('d-none');
+                    }
                 }
             }
 
@@ -559,12 +643,14 @@
             const id = $(this).data('id');
 
             inputType.val('');
-            if(selIe.val() === 'cGVuZGFwYXRhbg==' && selTypeIe.val() === '<?= base64_encode('revenue') ?>'){
+            if(selIe.val() === 'cGVuZGFwYXRhbg=='){
                 $('#modal-revenue').modal('show');
                 $('#modal-pendapatan-title').text('Edit Data Incomes');
+                $('.input-jenis-pendapatan').val(selTypeIe.find('option:selected').text());
             }
 
             else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
+                $('.penambahan-aset').addClass('d-none');
                 if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                     $('#modal-pengeluaran-gaji').modal('show');
                     $('#modal-pengeluaran-gaji-title').text('Edit Data Gaji Karyawan');
@@ -572,6 +658,10 @@
                     $('.input-jenis-pengeluaran').val(selTypeIe.find('option:selected').text());
                     $('#modal-pengeluaran-title').text('Edit Data Expensess');
                     $('#modal-pengeluaran').modal('show');
+
+                    if(selTypeIe.val() === 'cGVybGVuZ2thcGFuX3Rva28=' ){
+                        $('.penambahan-aset').removeClass('d-none');
+                    }
                 }
             }
 
@@ -593,7 +683,16 @@
         });
 
         $('.modal').on('hidden.bs.modal', function (e) {
-            $(this).find("input,textarea,select").val('').end()
+            $(this).find("input,textarea,select").val('').end();
+            $('.table-penambahan-aset tbody').html('');
+        });
+
+        $('.qty-pengeluaran').on('change keyup', function(){
+            $('.total-pengeluaran').val(hitungTotalPengeluaran());
+        });
+
+        $('.harga-pengeluaran').on('change keyup', function(){
+            $('.total-pengeluaran').val(hitungTotalPengeluaran());
         });
 
         function initLoad(){
@@ -609,7 +708,7 @@
                 url: 'incomes-expenses-data',
                 data: $('.form-filter').serialize(),
                 beforeSend: function(data){
-                    if(selIe.val() === 'cGVuZGFwYXRhbg==' && selTypeIe.val() === '<?= base64_encode('revenue') ?>'){
+                    if(selIe.val() === 'cGVuZGFwYXRhbg=='){
                         $('.pendapatan-revenue-table tbody').html('<tr><td class="text-center" colspan="6">Mengambil data...</td>')
                     } else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                         if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
@@ -621,7 +720,7 @@
                 },
                 success: function(response){
                     if(response.success){
-                        if(selIe.val() === 'cGVuZGFwYXRhbg==' && selTypeIe.val() === '<?= base64_encode('revenue') ?>'){
+                        if(selIe.val() === 'cGVuZGFwYXRhbg==' && selTypeIe.val()){
                             let tbody = '<tr><td class="text-center" colspan="6">Tidak ada data</td>';
                             if(response.data.length > 0){
                                 tbody = '';
@@ -712,7 +811,7 @@
                 data: {'incomes-expenses': selIe.val() , 'type': selTypeIe.val(), 'id' : id},
                 success: function(response){
                     if(response.success){
-                        if(selIe.val() === 'cGVuZGFwYXRhbg==' && selTypeIe.val() === '<?= base64_encode('revenue') ?>'){
+                        if(selIe.val() === 'cGVuZGFwYXRhbg=='){
                             $('.form-pendapatan-revenue').find('#id').val(response.data.id);
                             $('.form-pendapatan-revenue').find('#nama').val(response.data.nama);
                             $('.form-pendapatan-revenue').find('#tanggal-transaksi').val(response.data.tanggal);
@@ -738,11 +837,32 @@
                                 $('.form-pengeluaran').find('#harga').val(response.data.harga);
                                 $('.form-pengeluaran').find('#qty').val(response.data.qty);
                                 $('.form-pengeluaran').find('#payment-type').val(response.data.jenis_pembayaran).change();
+                                if(selTypeIe.val() === '<?= base64_encode('perlengkapan_toko') ?>'){
+                                    if(response.data.aset.length > 0){
+                                        let rowAset = '';
+
+                                        $.each(response.data.aset, function(i, item){
+                                            rowAset += `<tr>
+                                                            <td><input type="text" class="form-control nama-barang" minlength="3" required name="nama_barang[]" value="${item.nama_barang}"></td>
+                                                            <td><input type="number" class="form-control qty-barang" min="1" required name="qty_barang[]" value="${item.qty}"></td>
+                                                            <td class="text-center row-action"><button class="btn btn-danger btn-delete-asset"><i class="fa fa-trash"></i></button></td>
+                                                        </tr>`
+                                        });
+
+                                        $('.table-penambahan-aset tbody').html(rowAset);
+                                    }
+                                }
                             }
                         }
                     }
                 } 
             })
+        }
+
+        function hitungTotalPengeluaran(){
+            const harga = $('.harga-pengeluaran').val();
+            const qty = $('.qty-pengeluaran').val();
+            return parseFloat(harga) * parseFloat(qty);
         }
     });
 </script>

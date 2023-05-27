@@ -3298,11 +3298,11 @@ function hapusKaryawan($id) {
 
 // ====================================== INCOMES & EXPENSES =============================== //
 
-function tambahRevenue($data){
+function tambahPendapatan($data){
 	global $conn;
 	global $sessionCabang;
 	$incomes_expenses = base64_decode($data['incomes_expenses']);
-	$jenis = 'revenue';
+	$jenis = base64_decode($data['type']);
 	$nama = htmlspecialchars($data['nama']);
 	$total = $data['total'];
 	$real_income = $data['real_income'];
@@ -3326,7 +3326,7 @@ function tambahRevenue($data){
 				('$real_income', 0, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
 		} else {
 			$total_laba_pendapatan = $laba_bersih['lb_pendapatan_lain'] + $real_income;
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		}
 
 		if ($stmt = $conn->prepare($query)) {
@@ -3345,7 +3345,7 @@ function tambahRevenue($data){
 	return false;
 }
 
-function updateRevenue($data){
+function updatePendapatan($data){
 	global $conn;
 	global $sessionCabang;
 	$nama = htmlspecialchars($data['nama']);
@@ -3370,7 +3370,7 @@ function updateRevenue($data){
 	try {
 		$query = "UPDATE laba_bersih_detail SET nama = ?, total = ?, real_income = ?, jenis_pembayaran = ?, tanggal = ?, cabang = ?, updated_at = ? WHERE id = ?";
 		$total_laba_pendapatan = ($laba_bersih['lb_pendapatan_lain'] - $revenue['real_income']) + $real_income;
-		mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		if ($stmt = $conn->prepare($query)) {
 			$stmt->bind_param('sssssssi', $nama, $total, $real_income, $jenis_pembayaran, $tanggal, $sessionCabang, $updated_at, $id);
 			if ($stmt->execute()) {
@@ -3404,6 +3404,7 @@ function tambahIncomesExpenses($data){
 
 	$conn->begin_transaction();
 	try {
+		$laba_bersih_detail_id = 0;
 		$lb_pendapatan_lain = 0;
 		$lb_pengeluaran_gaji = 0;
 		$lb_pengeluaran_listrik = $jenis == 'listrik' ? $total : 0;
@@ -3442,14 +3443,33 @@ function tambahIncomesExpenses($data){
 									lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
 									lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
 									lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
-									lb_pengeluaran_lain='$total_lb_pengeluaran_lain'
+									lb_pengeluaran_lain='$total_lb_pengeluaran_lain',
+									updated_at='$updated_at'
 									WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		}
 
 		if ($stmt = $conn->prepare($query)) {
 			$stmt->bind_param('sssssssssss', $incomes_expenses, $jenis, $nama, $harga, $qty, $total, $jenis_pembayaran, $tanggal, $sessionCabang, $created_at, $updated_at);
 			if ($stmt->execute()) {
+				$laba_bersih_detail_id = $conn->insert_id;
 				$stmt->close();
+			}
+		}
+
+		/** PENAMBAHAN ASET PENGELUARAN PERLENGKAPAN TOKO */
+		if($jenis == 'perlengkapan_toko'){
+			if(isset($_POST['nama_barang'])){
+				$query_penambahan_aset = "INSERT INTO penambahan_aset(id_laba_bersih_detail, nama_barang, qty, cabang, created_at, updated_at)
+											VALUES
+										 (?, ?, ?, ?, ?, ?)";
+				if ($stmt = $conn->prepare($query_penambahan_aset)) {
+					for($i = 0; $i < count($_POST['nama_barang']); $i++){
+						$nama_barang = htmlspecialchars($_POST['nama_barang'][$i]);
+						$qty_barang = isset($_POST['qty_barang'][$i]) ? $_POST['qty_barang'][$i] : 0;
+						$stmt->bind_param("ssssss", $laba_bersih_detail_id, $nama_barang, $qty_barang, $sessionCabang, $created_at, $updated_at);
+						$stmt->execute();
+					}
+				}
 			}
 		}
 
@@ -3474,6 +3494,7 @@ function updateIncomesExpenses($data){
 	$id = base64_decode($data['id']);
 	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
 	$tanggal = $data['tanggal'];
+	$created_at = date('Y-m-d H:i:s');
 	$updated_at = date('Y-m-d H:i:s');
 
 	$incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
@@ -3505,13 +3526,32 @@ function updateIncomesExpenses($data){
 								lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
 								lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
 								lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
-								lb_pengeluaran_lain='$total_lb_pengeluaran_lain'
+								lb_pengeluaran_lain='$total_lb_pengeluaran_lain',
+								updated_at='$updated_at'
 								WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 
 		if ($stmt = $conn->prepare($query)) {
 			$stmt->bind_param('ssssssssi', $nama, $harga, $qty, $total, $jenis_pembayaran, $tanggal, $sessionCabang, $updated_at, $id);
 			if ($stmt->execute()) {
 				$stmt->close();
+			}
+		}
+
+		/** PENAMBAHAN ASET PENGELUARAN PERLENGKAPAN TOKO */
+		if($jenis == 'perlengkapan_toko'){
+			mysqli_query($conn, "DELETE FROM penambahan_aset WHERE id_laba_bersih_detail = '$id' AND cabang='$sessionCabang'");
+			if(isset($_POST['nama_barang'])){
+				$query_penambahan_aset = "INSERT INTO penambahan_aset(id_laba_bersih_detail, nama_barang, qty, cabang, created_at, updated_at)
+											VALUES
+										 (?, ?, ?, ?, ?, ?)";
+				if ($stmt = $conn->prepare($query_penambahan_aset)) {
+					for($i = 0; $i < count($_POST['nama_barang']); $i++){
+						$nama_barang = htmlspecialchars($_POST['nama_barang'][$i]);
+						$qty_barang = isset($_POST['qty_barang'][$i]) ? $_POST['qty_barang'][$i] : 0;
+						$stmt->bind_param("ssssss", $id, $nama_barang, $qty_barang, $sessionCabang, $created_at, $updated_at);
+						$stmt->execute();
+					}
+				}
 			}
 		}
 
@@ -3569,7 +3609,7 @@ function tambahGajiKaryawan($data){
 				(0, $total, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
 		} else {
 			$total_laba_gaji = $laba_bersih['lb_pengeluaran_gaji'] + $total;
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		}
 
 		mysqli_query($conn, "INSERT INTO gaji_karyawan(id_karyawan, periode, day, kddh, bonus_omset, salary, overtime, thp, laba_bersih_detail_id, cabang, created_at, updated_at)
@@ -3630,7 +3670,7 @@ function updateGajiKaryawan($data){
 				(0, $total, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
 		} else {
 			$total_laba_gaji = ($laba_bersih['lb_pengeluaran_gaji'] - $lb_dt['total']) + $total;
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		}
 
 		mysqli_query($conn, "UPDATE gaji_karyawan SET id_karyawan='$id_karyawan', periode='$periode', day='$day', kddh='$kddh', bonus_omset='$bonus_omset', salary='$salary', overtime='$overtime', thp='$total', updated_at='$updated_at' WHERE laba_bersih_detail_id='$laba_bersih_detail_id' AND cabang='$sessionCabang'");
@@ -3651,6 +3691,7 @@ function deleteIncomesExpenses($data){
 	$jenis = base64_decode($data['type']);
 	$id = base64_decode($data['delete']);
 	$incomes_expenses_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
+	$updated_at = date('Y-m-d H:i:s');
 
 	if(mysqli_num_rows($incomes_expenses_query) == 0){
 		return false;
@@ -3677,7 +3718,7 @@ function deleteIncomesExpenses($data){
 		$conn->begin_transaction();
 		try {
 			$total_laba_gaji = $laba_bersih['lb_pengeluaran_gaji'] - $incomes_expenses['total'];
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji' WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji', updated_at='$updated_at' WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
 			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
 			mysqli_query($conn, "DELETE FROM gaji_karyawan WHERE laba_bersih_detail_id = '$id' AND cabang='$sessionCabang'");
 			$conn->commit();
@@ -3704,10 +3745,12 @@ function deleteIncomesExpenses($data){
 									lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
 									lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
 									lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
-									lb_pengeluaran_lain='$total_lb_pengeluaran_lain'
+									lb_pengeluaran_lain='$total_lb_pengeluaran_lain',
+									updated_at='$updated_at'
 									WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
 
 			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
+			mysqli_query($conn, "DELETE FROM penambahan_aset WHERE id_laba_bersih_detail = '$id' AND cabang='$sessionCabang'");
 			$conn->commit();
 			return true;
 		} catch (mysqli_sql_exception $exception) {

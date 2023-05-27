@@ -49,14 +49,14 @@ $barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang
     $idBarang = mysqli_fetch_array($idBarang);
    	$keranjang_qty_stock = $idBarang['keranjang_qty'] + $idBarang['keranjang_konversi_isi'];
 
-   	if ( $keranjang_qty_stock >= $barang['barang_stock'] ) {
-   		echo '
-			<script>
-				alert("Produk TIDAK BISA DITAMBAHKAN Karena Jumlah QTY Melebihi Stock yang Ada di Semua Transaksi Kasir & Mohon di Cek Kembali !!!");
-				document.location.href = "'.$linkBack.'";
-			</script>
-		';
-   	} else {
+   	// if ( $keranjang_qty_stock >= $barang['barang_stock'] ) {
+   	// 	echo '
+	// 		<script>
+	// 			alert("Produk TIDAK BISA DITAMBAHKAN Karena Jumlah QTY Melebihi Stock yang Ada di Semua Transaksi Kasir & Mohon di Cek Kembali !!!");
+	// 			document.location.href = "'.$linkBack.'";
+	// 		</script>
+	// 	';
+   	// } else {
    		// Insert Data ke Table Keranjang dengan function tambahKeranjang() Lokasi di file aksi/function.php
 		if( tambahKeranjangDraft($keranjang_cabang, 
 			$barang_id, 
@@ -87,6 +87,6 @@ $barang = query("SELECT * FROM barang WHERE barang_id = ".$id." && barang_cabang
 				</script>
 			";
 		}
-   	}
+   	// }
 
 ?>

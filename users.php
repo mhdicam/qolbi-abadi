@@ -4,8 +4,9 @@
   include '_sidebar.php'; 
 ?>
 
-<?php  
-  if ( $levelLogin !== "super admin" ) {
+<?php
+
+  if ( $levelLogin == "kasir" || $levelLogin == "kurir" ) {
     echo "
       <script>
         document.location.href = 'bo';
