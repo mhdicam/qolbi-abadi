@@ -14,7 +14,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Nota Cetak Qolbi Abadi</title>
+	<title>Nota Cetak Bakmie Lana</title>
 	<meta charset=utf-8>
 	<meta name=description content="">
 	<meta name=viewport content="width=device-width, initial-scale=1">

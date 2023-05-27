@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Qolbi Abadi</title>
+	<title>Bakmie Lana</title>
 	<meta charset="UTF-8">
 	<meta name="description" content="POS ini adalah Software Kasir dengan fitur lengkap dan support Multi cabang. POS Seniman Koding adalah software POS Kasir multi user dengan fitur yang mempuni. aplikasi kasir, software retail, software minimarket, aplikasi supermarket, aplikasi retail, aplikasi kasir online, aplikasi kasir berbasis website">
 	<meta name="keyword" content="POS ini adalah Software Kasir dengan fitur lengkap dan support Multi cabang, aplikasi kasir, software retail, software minimarket, aplikasi supermarket, aplikasi retail, aplikasi kasir online, aplikasi kasir berbasis website">
@@ -40,7 +40,7 @@
 			<div class="wrap-login100">
 				<form class="login100-form validate-form" action="aksi/login" method="post">
 					<span class="login100-form-title p-b-43">
-						Login <b>Qolbi Abadi</b>
+						Login <b>Bakmie Lana</b>
 					</span>
 					
 					
@@ -76,7 +76,7 @@
 					</div>
 				</form>
 
-				<div class="login100-more" style="background-image: url('assets-login/images/bg-02.jpg');">
+				<div class="login100-more" style="background-image: url('assets-login/images/logo-lana.jpg');">
 				</div>
 			</div>
 		</div>

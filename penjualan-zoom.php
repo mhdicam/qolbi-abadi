@@ -69,7 +69,7 @@
               <?php endforeach; ?>
               <div class="row invoice-info">
                 <div class="col-sm-1 invoice-col">
-                <img src="assets-login/images/qa.jpg" width="90" height="100">
+                <img src="assets-login/images/logo-lana.jpg" width="90" height="100">
                 </div>
                 <div class="col-sm-4 invoice-col">
                   Dari

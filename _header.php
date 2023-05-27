@@ -17,12 +17,12 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Qolbi Abadi</title>
+  <title>Bakmie Lana</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
   <!-- Favicon -->
-  <link rel="icon" type="img/png" sizes="32x32" href="assets-login/images/qa.jpg">
+  <link rel="icon" type="img/png" sizes="32x32" href="assets-login/images/logo-lana.jpg">
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="dist/css/font-awesome.min.css">
   <!-- Ionicons -->
