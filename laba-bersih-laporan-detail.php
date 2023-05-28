@@ -203,12 +203,6 @@
                       <tr>
                         <td>
                           c. Pendapatan Lain
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pendapatan' AND jenis='revenue' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pendapatan_lain, 0, ',', '.'); ?></td>
                       </tr>
@@ -245,99 +239,48 @@
                       <tr>
                         <td>
                           a. Total Gaji Pegawai
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT a.*, b.*, c.nama_karyawan FROM laba_bersih_detail as a
-                                                                LEFT JOIN gaji_karyawan as b ON a.id = b.laba_bersih_detail_id
-                                                                LEFT JOIN karyawan as c ON c.id = b.id_karyawan
-                                                                WHERE a.incomes_expenses='pengeluaran' AND a.jenis='gaji_karyawan' AND a.cabang='$sessionCabang' AND MONTH(a.tanggal) BETWEEN '".$bulan_awal."' AND '".$bulan_akhir."' AND YEAR(a.tanggal) BETWEEN '".$tahun_awal."' AND '".$tahun_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama_karyawan'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_gaji, 0, ',', '.'); ?></td>
                       </tr>
                       <tr>
                         <td>
                           b. Biaya Listrik 1 Bulan
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='listrik' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_listrik, 0, ',', '.'); ?></td>
                       </tr>
                       <tr>
                         <td>
                           c. Telepon & Internet
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='telepon_internet' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_tlpn_internet, 0, ',', '.'); ?></td>
                       </tr>
                       <tr>
                         <td>
                           d. Perlengkapan Toko
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='perlengkapan_toko' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_perlengkapan_toko, 0, ',', '.'); ?></td>
                       </tr>
                       <tr>
                         <td>
                           e. Biaya Penyusutan
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='biaya_penyusutan' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_biaya_penyusutan, 0, ',', '.'); ?></td>
                       </tr>
                       <tr>
                         <td>
                           f. Transportasi & Bensin
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='bensin' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_bensin, 0, ',', '.'); ?></td>
                       </tr>
                       <tr>
                         <td>
                           g. Biaya Tak Terduga
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='tak_terduga' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_tak_terduga, 0, ',', '.'); ?></td>
                       </tr>
                       <tr>
                         <td>
                           h. Pengeluaran Lain
-                          <?php
-                            $pend_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='lain_lain' AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-                            while($r_pend = mysqli_fetch_assoc($pend_query)){
-                              echo '<br><span class="ml-2">-' . $r_pend['nama'] . '</span>';
-                            }
-                          ?>
                         </td>
                         <td>Rp <?= number_format($lb_pengeluaran_lain, 0, ',', '.'); ?></td>
                       </tr>

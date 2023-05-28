@@ -273,7 +273,7 @@
     <section class="table-informasi">
       <div class="container">
         <div class="row">
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title"><b>Chart Pemasukan</b> <?= $sessionCabang == 0 ? 'Percabang' : '' ?></h3>
@@ -284,7 +284,7 @@
             </div>
           </div>
 
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title"><b>Chart Pengeluaran</b> <?= $sessionCabang == 0 ? 'Percabang' : '' ?></h3>

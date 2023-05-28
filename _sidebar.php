@@ -334,7 +334,13 @@
               <li class="nav-item">
                 <a href="laba-bersih-laporan" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Laporan Laba Bersih</p>
+                  <p>Lap. Laba Bersih</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="laporan-incomes-expenses" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Lap. Incomes/Expenses</p>
                 </a>
               </li>
               
