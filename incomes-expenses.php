@@ -225,7 +225,7 @@
                                     </tr>
                                 </tfoot>
                             </table>
-                            <table class="table table-bordered table-striped incomes-expenses-table pengeluaran-table <?= $_GET['incomes-expenses'] == 'cGVuZ2VsdWFyYW4=' && $_GET['type'] != 'Z2FqaV9rYXJ5YXdhbg==' ? '' : 'd-none' ?>">
+                            <table class="table table-bordered table-striped incomes-expenses-table pengeluaran-table <?= $_GET['incomes-expenses'] == 'cGVuZ2VsdWFyYW4=' && $_GET['type'] != 'Z2FqaV9rYXJ5YXdhbg==' && $_GET['type'] != 'cGVybGVuZ2thcGFuX3Rva28=' ? '' : 'd-none' ?>">
                                 <thead>
                                     <tr>
                                         <th>No.</th>
@@ -242,6 +242,26 @@
                                     <tr>
                                         <th></th>
                                         <th></th>
+                                        <th></th>
+                                        <th>Grand Total</th>
+                                        <th class="text-right grand-total">Rp. 0</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <table class="table table-bordered table-striped incomes-expenses-table pengeluaran-perlengkapan-toko-table <?= $_GET['incomes-expenses'] == 'cGVuZ2VsdWFyYW4=' && $_GET['type'] == 'cGVybGVuZ2thcGFuX3Rva28=' ? '' : 'd-none' ?>">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Nama</th>
+                                        <th>Total</th>
+                                        <th style="text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
                                         <th></th>
                                         <th>Grand Total</th>
                                         <th class="text-right grand-total">Rp. 0</th>
@@ -315,11 +335,11 @@
                     </div>
                     <div class="form-group">
                         <label for="total">Total</label>
-                        <input type="number" id="total" class="form-control" name="total" min="0" required>
+                        <input type="text" id="total" class="form-control price-format" name="total" min="0" required>
                     </div>
                     <div class="form-group">
                         <label for="real-income">Real Income</label>
-                        <input type="number" id="real-income" class="form-control" name="real_income" min="0" required>
+                        <input type="text" id="real-income" class="form-control price-format" name="real_income" min="0" required>
                     </div>
                     <div class="form-group">
                         <label for="payment-type">Payment Type</label>
@@ -373,11 +393,11 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="harga">Harga</label>
-                            <input type="number" id="harga" name="harga" class="form-control harga-pengeluaran" min="0" required>
+                            <input type="text" id="harga" name="harga" class="form-control price-format harga-pengeluaran" min="0" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="total">Total</label>
-                            <input type="number" id="total" name="total" class="form-control total-pengeluaran bg-white" readonly>
+                            <input type="text" id="total" name="total" class="form-control price-format total-pengeluaran bg-white" readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="payment-type">Payment Type</label>
@@ -395,6 +415,7 @@
                             <thead>
                                 <tr>
                                     <th>Nama Barang</th>
+                                    <th width="30%">Harga</th>
                                     <th width="30%">Qty</th>
                                     <th></th>
                                 </tr>
@@ -403,6 +424,7 @@
                             <tfoot>
                                 <tr>
                                     <td><input type="text" class="form-control nama-barang" minlength="3"></td>
+                                    <td><input type="text" class="form-control harga-barang price-format"></td>
                                     <td><input type="number" class="form-control qty-barang" min="1"></td>
                                     <td class="text-center row-action"><button class="btn btn-success btn-add-asset" type="button" disabled><i class="fa fa-plus"></i></button></td>
                                 </tr>
@@ -413,6 +435,78 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-show-perlengkapan-toko" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-perlengkapan-toko-title">...</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="" method="POST" class="form-show-perlengkapan-toko">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" name="type" value="" class="input-type">
+                        <input type="hidden" name="incomes_expenses" value="" class="input-incomes-expenses">
+                        <input type="hidden" name="id" value="" class="input-id" id="id">
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="jenis-pengeluaran">Jenis Pengeluaran</label>
+                            <input type="text" id="jenis-pengeluaran" class="form-control input-jenis-pengeluaran" disabled>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="tanggal-transaksi">Tanggal Transaksi</label>
+                            <input type="date" id="tanggal-transaksi" class="form-control bg-white" readonly>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="nama">Nama</label>
+                            <input type="text" id="nama" class="form-control bg-white" autocomplete="off" readonly>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="qty">Qty</label>
+                            <input type="number" id="qty" class="form-control qty-pengeluaran" min="1" disabled>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="harga">Harga</label>
+                            <input type="text" id="harga" class="form-control price-format harga-pengeluaran" min="0" disabled>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="total">Total</label>
+                            <input type="text" id="total" class="form-control price-format total-pengeluaran bg-white" readonly>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="payment-type">Payment Type</label>
+                            <select id="payment-type" class="form-control bg-white" disabled>
+                                <option value="">-Select Payment Type-</option>
+                                <option value="<?= base64_encode('Cash') ?>">Cash</option>
+                                <option value="<?= base64_encode('Debit') ?>">Debit</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="penambahan-aset d-none">
+                        <label>Penambahan Aset</label>
+                        <table class="table table-bordered table-detail-penambahan-aset">
+                            <thead>
+                                <tr>
+                                    <th>Nama Barang</th>
+                                    <th width="30%">Harga</th>
+                                    <th width="30%">Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 </div>
             </form>
         </div>
@@ -454,7 +548,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="">KDDH</label>
-                            <input type="number" min="0" name="kddh" class="form-control kddh" id="kddh" autocomplete="off">
+                            <input type="text" name="kddh" class="form-control kddh price-format" id="kddh" autocomplete="off">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="">Day</label>
@@ -462,15 +556,15 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="">Bonus Omset</label>
-                            <input type="number" min="0" name="bonus_omset" class="form-control bonus-omset" id="bonus-omset" autocomplete="off">
+                            <input type="text" name="bonus_omset" class="form-control bonus-omset price-format" id="bonus-omset" autocomplete="off">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="">Salary</label>
-                            <input type="number" min="1" name="salary" class="form-control salary" id="salary" autocomplete="off" required>
+                            <input type="text" min="1" name="salary" class="form-control salary price-format" id="salary" autocomplete="off" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="">Overtime</label>
-                            <input type="number" min="0" name="overtime" class="form-control overtime" id="overtime" autocomplete="off">
+                            <input type="text" name="overtime" class="form-control overtime price-format" id="overtime" autocomplete="off">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="payment-type">Payment Type</label>
@@ -496,9 +590,14 @@
 <script src="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="https://nosir.github.io/cleave.js/dist/cleave.min.js"></script>
+<script src="https://nosir.github.io/cleave.js/dist/cleave-phone.i18n.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
 <script>
     $(function(){
         initLoad();
+        initCleaveJS();
+
         $(".periode").datepicker( {
             format: "yyyy-mm",
             startView: "months", 
@@ -561,6 +660,12 @@
                     $('.pengeluaran-gaji-table').removeClass('d-none').find('tbody').html('<tr><td colspan="9" class="text-center">Mengambil data...</td></tr>');
                     $('.pengeluaran-gaji-table').find('.grand-total').text('Rp. 0');
                 }
+
+                else if(v === '<?= base64_encode('perlengkapan_toko') ?>'){
+                    $('.pengeluaran-table').addClass('d-none');
+                    $('.pengeluaran-perlengkapan-toko-table').removeClass('d-none').find('tbody').html('<tr><td colspan="9" class="text-center">Mengambil data...</td></tr>');
+                    $('.pengeluaran-perlengkapan-toko-table').find('.grand-total').text('Rp. 0');
+                }
             }
 
             getIncomesExpensesDatas();
@@ -574,10 +679,22 @@
             cekInputPenambahanAset()
         });
 
+        $('.table-penambahan-aset tfoot tr td .harga-barang').on('change keyup', function(){
+            cekInputPenambahanAset()
+        });
+
+        $('.table-penambahan-aset tbody').on('change keyup', 'tr td .qty-barang', function(){
+            $('.total-pengeluaran').val(numeral(hitungTotalPenambahanAset()).format('0,0'));
+        });
+
+        $('.table-penambahan-aset tbody').on('change keyup', 'tr td .harga-barang', function(){
+            $('.total-pengeluaran').val(numeral(hitungTotalPenambahanAset()).format('0,0'));
+        });
+
         function cekInputPenambahanAset(){
             $('.table-penambahan-aset tfoot tr td .btn-add-asset').prop('disabled', true);
             if($('.table-penambahan-aset tfoot tr td .nama-barang').val() !== '' && $('.table-penambahan-aset tfoot tr td .qty-barang').val() !== ''){
-                if($('.table-penambahan-aset tfoot tr td .qty-barang').val() > 0 && $('.table-penambahan-aset tfoot tr td .nama-barang').val().length >= 3)
+                if($('.table-penambahan-aset tfoot tr td .qty-barang').val() > 0 && $('.table-penambahan-aset tfoot tr td .nama-barang').val().length >= 3 && $('.table-penambahan-aset tfoot tr td .harga-barang').val().length >= 1)
                     $('.table-penambahan-aset tfoot tr td .btn-add-asset').prop('disabled', false);
             }
         }
@@ -592,8 +709,11 @@
             cloneEl.find('.form-control').prop('required', true);
             cloneEl.find('.form-control.nama-barang').prop('name', 'nama_barang[]');
             cloneEl.find('.form-control.qty-barang').prop('name', 'qty_barang[]');
+            cloneEl.find('.form-control.harga-barang').prop('name', 'harga_barang[]');
             $('.table-penambahan-aset tfoot tr').find('.form-control').val('');
             $('.table-penambahan-aset tfoot tr').find('.btn-add-asset').prop('disabled', true);
+            $('.total-pengeluaran').val(hitungTotalPenambahanAset());
+            initCleaveJS();
         });
 
         $('.table-penambahan-aset tbody').on('click', 'tr td .btn-delete-asset', function(){
@@ -616,6 +736,8 @@
 
             else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                 $('.penambahan-aset').addClass('d-none');
+                $('.qty-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'qty');
+                $('.harga-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'harga');
                 if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                     $('#modal-pengeluaran-gaji').modal('show');
                     $('#modal-pengeluaran-gaji-title').text('Tambah Data Gaji Karyawan');
@@ -627,6 +749,8 @@
                     
                     if(selTypeIe.val() === 'cGVybGVuZ2thcGFuX3Rva28=' ){
                         $('.penambahan-aset').removeClass('d-none');
+                        $('.qty-pengeluaran').prop('disabled', true).prop('required', false).removeAttr('name');
+                        $('.harga-pengeluaran').prop('disabled', true).prop('required', false).removeAttr('name');
                     }
                 }
             }
@@ -651,6 +775,8 @@
 
             else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                 $('.penambahan-aset').addClass('d-none');
+                $('.qty-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'qty');
+                $('.harga-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'harga');
                 if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                     $('#modal-pengeluaran-gaji').modal('show');
                     $('#modal-pengeluaran-gaji-title').text('Edit Data Gaji Karyawan');
@@ -661,6 +787,8 @@
 
                     if(selTypeIe.val() === 'cGVybGVuZ2thcGFuX3Rva28=' ){
                         $('.penambahan-aset').removeClass('d-none');
+                        $('.qty-pengeluaran').prop('disabled', true).prop('required', false).removeAttr('name');
+                        $('.harga-pengeluaran').prop('disabled', true).prop('required', false).removeAttr('name');
                     }
                 }
             }
@@ -669,6 +797,30 @@
             inputIe.val(selIe.val());
 
             getIncomesExpensesData(id)
+        });
+
+        $('.table tbody').on('click', 'tr td .btn-show-perlengkapan-toko', function(){
+            const selIe = $('.select-incomes-expenses');
+            const selTypeIe = $('.select-type-incomes-expenses');
+            const inputType = $('.input-type');
+            const inputIe = $('.input-incomes-expenses');
+            const id = $(this).data('id');
+
+            inputType.val('');
+            if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
+                $('.input-jenis-pengeluaran').val(selTypeIe.find('option:selected').text());
+                $('#modal-show-perlengkapan-toko').modal('show');
+                $('#modal-perlengkapan-toko-title').text('Detail Perlengkapan Toko');
+                $('.penambahan-aset').addClass('d-none');
+                $('.penambahan-aset').removeClass('d-none');
+                $('.qty-pengeluaran').prop('disabled', true).prop('required', false).removeAttr('name');
+                $('.harga-pengeluaran').prop('disabled', true).prop('required', false).removeAttr('name');
+            }
+
+            inputType.val(selTypeIe.val());
+            inputIe.val(selIe.val());
+
+            getIncomesExpensesData(id, true);
         });
 
         $('.table tbody').on('click', 'tr td .btn-delete', function(){
@@ -688,11 +840,11 @@
         });
 
         $('.qty-pengeluaran').on('change keyup', function(){
-            $('.total-pengeluaran').val(hitungTotalPengeluaran());
+            $('.total-pengeluaran').val(numeral(hitungTotalPengeluaran()).format('0,0'));
         });
 
         $('.harga-pengeluaran').on('change keyup', function(){
-            $('.total-pengeluaran').val(hitungTotalPengeluaran());
+            $('.total-pengeluaran').val(numeral(hitungTotalPengeluaran()).format('0,0'));
         });
 
         function initLoad(){
@@ -771,7 +923,32 @@
 
                                 $('.pengeluaran-gaji-table tbody').html(tbody)
                                 $('.pengeluaran-gaji-table').find('.grand-total').text(response.grand_total_idr_format);
-                            } else {
+                            } 
+                            else if(selTypeIe.val() === '<?= base64_encode('perlengkapan_toko') ?>') {
+                                let tbody = '<tr><td class="text-center" colspan="4">Tidak ada data</td>';
+                                if(response.data.length > 0){
+                                    tbody = '';
+                                    let no = 1;
+                                    $.each(response.data, function(i, item){
+                                        tbody += `<tr>
+                                                    <td>${no++}</td>
+                                                    <td>${item.nama}</td>
+                                                    <td class="text-right">${item.total_idr_format}</td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-success btn-show-perlengkapan-toko" data-id="${item.id}"><i class="fa fa-eye"></i></button>
+                                                        <button class="btn btn-sm btn-primary btn-edit" data-id="${item.id}"><i class="fa fa-pencil"></i></button>
+                                                        <button class="btn btn-sm btn-danger btn-delete" data-id="${item.id}"><i class="fa fa-trash"></i></button>
+                                                        <form action="" method="POST" class="form-delete"><input type="hidden" name="delete" value="${item.id}" /><input type="hidden" name="type" value="${selTypeIe.val()}" /><input type="hidden" name="incomes_expenses" value="${selIe.val()}" /></form>
+                                                    </td>
+                                                </tr>`;
+                                    });
+                                }
+
+                                $('.pengeluaran-perlengkapan-toko-table tbody').html(tbody)
+                                $('.pengeluaran-perlengkapan-toko-table').find('.grand-total').text(response.grand_total_idr_format);
+                            }
+                            
+                            else {
                                 let tbody = '<tr><td class="text-center" colspan="6">Tidak ada data</td>';
                                 if(response.data.length > 0){
                                     tbody = '';
@@ -801,7 +978,7 @@
             })
         }
 
-        function getIncomesExpensesData(id)
+        function getIncomesExpensesData(id, isShow = false)
         {
             const selIe = $('.select-incomes-expenses');
             const selTypeIe = $('.select-type-incomes-expenses');
@@ -815,41 +992,71 @@
                             $('.form-pendapatan-revenue').find('#id').val(response.data.id);
                             $('.form-pendapatan-revenue').find('#nama').val(response.data.nama);
                             $('.form-pendapatan-revenue').find('#tanggal-transaksi').val(response.data.tanggal);
-                            $('.form-pendapatan-revenue').find('#total').val(response.data.total);
-                            $('.form-pendapatan-revenue').find('#real-income').val(response.data.real_income);
+                            $('.form-pendapatan-revenue').find('#total').val(numeral(response.data.total).format('0,0'));
+                            $('.form-pendapatan-revenue').find('#real-income').val(numeral(response.data.real_income).format('0,0'));
                             $('.form-pendapatan-revenue').find('#payment-type').val(response.data.jenis_pembayaran).change();
                         } else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                             if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                                 $('.form-pengeluaran-gaji').find('#id').val(response.data.id);
                                 $('.form-pengeluaran-gaji').find('#periode').val(response.data.periode);
                                 $('.form-pengeluaran-gaji').find('#karyawan').val(response.data.karyawan).change();
-                                $('.form-pengeluaran-gaji').find('#kddh').val(response.data.kddh);
+                                $('.form-pengeluaran-gaji').find('#kddh').val(numeral(response.data.kddh).format('0,0'));
                                 $('.form-pengeluaran-gaji').find('#day').val(response.data.day);
-                                $('.form-pengeluaran-gaji').find('#bonus-omset').val(response.data.bonus_omset);
-                                $('.form-pengeluaran-gaji').find('#salary').val(response.data.salary);
-                                $('.form-pengeluaran-gaji').find('#overtime').val(response.data.overtime);
+                                $('.form-pengeluaran-gaji').find('#bonus-omset').val(numeral(response.data.bonus_omset).format('0,0'));
+                                $('.form-pengeluaran-gaji').find('#salary').val(numeral(response.data.salary).format('0,0'));
+                                $('.form-pengeluaran-gaji').find('#overtime').val(numeral(response.data.overtime).format('0,0'));
                                 $('.form-pengeluaran-gaji').find('#payment-type').val(response.data.jenis_pembayaran).change();
                             } else {
-                                $('.form-pengeluaran').find('#id').val(response.data.id);
-                                $('.form-pengeluaran').find('#nama').val(response.data.nama);
-                                $('.form-pengeluaran').find('#tanggal-transaksi').val(response.data.tanggal);
-                                $('.form-pengeluaran').find('#total').val(response.data.total);
-                                $('.form-pengeluaran').find('#harga').val(response.data.harga);
-                                $('.form-pengeluaran').find('#qty').val(response.data.qty);
-                                $('.form-pengeluaran').find('#payment-type').val(response.data.jenis_pembayaran).change();
-                                if(selTypeIe.val() === '<?= base64_encode('perlengkapan_toko') ?>'){
-                                    if(response.data.aset.length > 0){
-                                        let rowAset = '';
+                                if(!isShow){
+                                    $('.form-pengeluaran').find('#id').val(response.data.id);
+                                    $('.form-pengeluaran').find('#nama').val(response.data.nama);
+                                    $('.form-pengeluaran').find('#tanggal-transaksi').val(response.data.tanggal);
+                                    $('.form-pengeluaran').find('#total').val(numeral(response.data.total).format('0,0'));
+                                    $('.form-pengeluaran').find('#harga').val(numeral(response.data.harga).format('0,0'));
+                                    $('.form-pengeluaran').find('#qty').val(response.data.qty);
+                                    $('.form-pengeluaran').find('#payment-type').val(response.data.jenis_pembayaran).change();
+                                    if(selTypeIe.val() === '<?= base64_encode('perlengkapan_toko') ?>'){
+                                        if(response.data.aset.length > 0){
+                                            let rowAset = '';
 
-                                        $.each(response.data.aset, function(i, item){
-                                            rowAset += `<tr>
-                                                            <td><input type="text" class="form-control nama-barang" minlength="3" required name="nama_barang[]" value="${item.nama_barang}"></td>
-                                                            <td><input type="number" class="form-control qty-barang" min="1" required name="qty_barang[]" value="${item.qty}"></td>
-                                                            <td class="text-center row-action"><button class="btn btn-danger btn-delete-asset"><i class="fa fa-trash"></i></button></td>
-                                                        </tr>`
-                                        });
+                                            $.each(response.data.aset, function(i, item){
+                                                rowAset += `<tr>
+                                                                <td><input type="text" class="form-control nama-barang" minlength="3" required name="nama_barang[]" value="${item.nama_barang}"></td>
+                                                                <td><input type="text" class="form-control price-format harga-barang" min="1" required name="harga_barang[]" value="${numeral(item.harga).format('0,0')}"></td>
+                                                                <td><input type="number" class="form-control qty-barang" min="1" required name="qty_barang[]" value="${item.qty}"></td>
+                                                                <td class="text-center row-action"><button class="btn btn-danger btn-delete-asset"><i class="fa fa-trash"></i></button></td>
+                                                            </tr>`
+                                                
+                                            });
 
-                                        $('.table-penambahan-aset tbody').html(rowAset);
+                                            $('.table-penambahan-aset tbody').html(rowAset);
+                                            initCleaveJS();
+                                        }
+                                    }
+                                } else {
+                                    $('.form-show-perlengkapan-toko').find('#id').val(response.data.id);
+                                    $('.form-show-perlengkapan-toko').find('#nama').val(response.data.nama);
+                                    $('.form-show-perlengkapan-toko').find('#tanggal-transaksi').val(response.data.tanggal);
+                                    $('.form-show-perlengkapan-toko').find('#total').val(numeral(response.data.total).format('0,0'));
+                                    $('.form-show-perlengkapan-toko').find('#harga').val(numeral(response.data.harga).format('0,0'));
+                                    $('.form-show-perlengkapan-toko').find('#qty').val(response.data.qty);
+                                    $('.form-show-perlengkapan-toko').find('#payment-type').val(response.data.jenis_pembayaran).change();
+                                    if(selTypeIe.val() === '<?= base64_encode('perlengkapan_toko') ?>'){
+                                        if(response.data.aset.length > 0){
+                                            let rowAset = '';
+
+                                            $.each(response.data.aset, function(i, item){
+                                                rowAset += `<tr>
+                                                                <td><input type="text" class="form-control nama-barang bg-white" disabled value="${item.nama_barang}"></td>
+                                                                <td><input type="text" class="form-control price-format harga-barang bg-white" disabled value="${numeral(item.harga).format('0,0')}"></td>
+                                                                <td><input type="number" class="form-control qty-barang bg-white" disabled value="${item.qty}"></td>
+                                                            </tr>`
+                                                
+                                            });
+
+                                            $('.table-detail-penambahan-aset tbody').html(rowAset);
+                                            initCleaveJS();
+                                        }
                                     }
                                 }
                             }
@@ -860,9 +1067,31 @@
         }
 
         function hitungTotalPengeluaran(){
-            const harga = $('.harga-pengeluaran').val();
+            const harga = $('.harga-pengeluaran').val().replace(/,/g, '');
             const qty = $('.qty-pengeluaran').val();
             return parseFloat(harga) * parseFloat(qty);
+        }
+
+        function hitungTotalPenambahanAset(){
+            let total = 0;
+            $('.table-penambahan-aset tbody tr').each(function(){
+                const t = $(this);
+                const qty = t.find('.qty-barang').val().replace(/,/g, '');
+                const harga = t.find('.harga-barang').val().replace(/,/g, '');
+                const totalHarga = parseInt(qty) * parseFloat(harga);
+                total += totalHarga;
+            });
+
+            return total;
+        }
+
+        function initCleaveJS(){
+            $('.price-format').toArray().forEach(function(field) {
+                new Cleave(field, {
+                    numeral: true,
+                    numeralThousandsGroupStyle: 'thousand'
+                });
+            });
         }
     });
 </script>

@@ -176,7 +176,8 @@
                           $pend_query = mysqli_query($conn, "SELECT a.*, b.*, c.nama_karyawan FROM laba_bersih_detail as a
                                                               LEFT JOIN gaji_karyawan as b ON a.id = b.laba_bersih_detail_id
                                                               LEFT JOIN karyawan as c ON c.id = b.id_karyawan
-                                                              WHERE a.incomes_expenses='pengeluaran' AND a.jenis='gaji_karyawan' AND a.cabang='$sessionCabang' AND a.created_at BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
+                                                              WHERE a.incomes_expenses='pengeluaran' AND a.jenis='gaji_karyawan' AND a.cabang='$sessionCabang'
+                                                              AND DATE(a.created_at) BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
 
                           $row_gaji_karyawan = '';
                           $total_gaji_karyawan = 0;

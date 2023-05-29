@@ -6,8 +6,8 @@ if($_POST && $_SESSION['user_id'] != null){
     $cabang = $sessionCabang;
     $date_now = date('Y-m-d');
     $date_filter = isset($_POST['date']) ? $_POST['date'] : $date_now;
-    $start_date = isset($_POST['start_date']) ? $_POST['start_date'] : $date_now;
-    $end_date = isset($_POST['end_date']) ? $_POST['end_date'] : $date_now;
+    $start_date = isset($_POST['start_date']) ? date('Y-m-d', strtotime($_POST['start_date'])) : $date_now;
+    $end_date = isset($_POST['end_date']) ? date('Y-m-d', strtotime($_POST['end_date'])) : $date_now;
     $start_month_only_filter = date('m', strtotime($start_date));
     $end_month_only_filter = date('m', strtotime($end_date));
     $start_year_only_filter = date('Y', strtotime($start_date));
@@ -20,12 +20,18 @@ if($_POST && $_SESSION['user_id'] != null){
         $grand_total = 0;
 
         if($incomes_expenses_decode == 'pengeluaran' && $jenis_decode == 'gaji_karyawan'){
-            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
+        //     $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
+        //                                                     LEFT JOIN laba_bersih_detail as b ON a.laba_bersih_detail_id = b.id
+        //                                                     LEFT JOIN karyawan as c ON c.id = a.id_karyawan
+        //                                                     WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
+        //                                                     AND MONTH(b.tanggal) >= '$start_month_only_filter' AND MONTH(b.tanggal) <= '$end_month_only_filter'
+        //                                                     AND YEAR(b.tanggal) >= '$start_year_only_filter' AND b.cabang='$cabang' AND YEAR(b.tanggal) <= '$end_year_only_filter'");
+            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.created_at as created_at, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
                                                             LEFT JOIN laba_bersih_detail as b ON a.laba_bersih_detail_id = b.id
                                                             LEFT JOIN karyawan as c ON c.id = a.id_karyawan
                                                             WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
-                                                            AND MONTH(b.tanggal) >= '$start_month_only_filter' AND MONTH(b.tanggal) <= '$end_month_only_filter'
-                                                            AND YEAR(b.tanggal) >= '$start_year_only_filter' AND b.cabang='$cabang' AND YEAR(b.tanggal) <= '$end_year_only_filter'");
+                                                            AND DATE(b.created_at) >= '$start_date' AND DATE(b.created_at) <= '$end_date'
+                                                            ");
 
             while($row = mysqli_fetch_assoc($incomes_expenses_query)){
                 $arr_data[] = [
@@ -42,7 +48,7 @@ if($_POST && $_SESSION['user_id'] != null){
                     'overtime' => $row['overtime'],
                     'overtime_idr_format' => 'Rp. ' . number_format($row['overtime']),
                     'total' => $row['total'],
-                    'total_idr_format' => 'Rp. ' . number_format($row['total']),
+                    'total_idr_format' => 'Rp. ' . number_format($row['total'])
                 ];
                 $grand_total += $row['total'];
             }
@@ -115,6 +121,7 @@ if($_POST && $_SESSION['user_id'] != null){
                 while($row = mysqli_fetch_assoc($penambahan_aset_query)){
                     $row_aset[] = [
                         'nama_barang' => $row['nama_barang'],
+                        'harga' => $row['harga'],
                         'qty' => $row['qty']
                     ];
                 }
