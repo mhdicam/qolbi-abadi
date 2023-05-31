@@ -26,7 +26,7 @@ if($_POST && $_SESSION['user_id'] != null){
         //                                                     WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
         //                                                     AND MONTH(b.tanggal) >= '$start_month_only_filter' AND MONTH(b.tanggal) <= '$end_month_only_filter'
         //                                                     AND YEAR(b.tanggal) >= '$start_year_only_filter' AND b.cabang='$cabang' AND YEAR(b.tanggal) <= '$end_year_only_filter'");
-            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.created_at as created_at, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
+            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.created_at as created_at, b.jenis_pembayaran as jenis_pembayaran, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
                                                             LEFT JOIN laba_bersih_detail as b ON a.laba_bersih_detail_id = b.id
                                                             LEFT JOIN karyawan as c ON c.id = a.id_karyawan
                                                             WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
@@ -48,6 +48,7 @@ if($_POST && $_SESSION['user_id'] != null){
                     'overtime' => $row['overtime'],
                     'overtime_idr_format' => 'Rp. ' . number_format($row['overtime']),
                     'total' => $row['total'],
+                    'payment_type' => $row['jenis_pembayaran'],
                     'total_idr_format' => 'Rp. ' . number_format($row['total'])
                 ];
                 $grand_total += $row['total'];
@@ -61,6 +62,7 @@ if($_POST && $_SESSION['user_id'] != null){
                     'nama' => $row['nama'],
                     'tanggal' => $row['tanggal'],
                     'total' => $row['total'],
+                    'payment_type' => $row['jenis_pembayaran'],
                     'total_idr_format' => 'Rp. ' . number_format($row['total']),
                     'real_income' => $row['real_income'],
                     'real_income_idr_format' => 'Rp. ' . number_format($row['real_income'])
@@ -75,6 +77,7 @@ if($_POST && $_SESSION['user_id'] != null){
                     'nama' => $row['nama'],
                     'tanggal' => $row['tanggal'],
                     'total' => $row['total'],
+                    'payment_type' => $row['jenis_pembayaran'],
                     'qty' => $row['qty'],
                     'total_idr_format' => 'Rp. ' . number_format($row['total']),
                     'harga' => $row['harga'],

@@ -93,11 +93,13 @@
 
                           $total_pendapatan += $total_revenue;
                           
-                          $row_revenue .= '<tr>
-                                              <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                              <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                           </tr>';
-                      ?>
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_revenue .= '<tr>
+                                                <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                            </tr>';
+                          }
+                        ?>
                       <tr>
                         <td class="p-2" width="60%">a. Revenue</td>
                         <td class="p-2 text-bold">
@@ -135,10 +137,12 @@
 
                           $total_pendapatan += $total_pendapatan_lain;
 
-                          $row_pendapatan_lain .= '<tr>
-                                                        <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                        <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                                    </tr>';
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_pendapatan_lain .= '<tr>
+                                                          <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                          <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                                      </tr>';
+                          }
                       ?>
                       <tr>
                         <td class="p-2">b. Pendapatan Lain</td>
@@ -201,10 +205,13 @@
                           }
 
                           $total_pengeluaran += $total_gaji_karyawan;
-                          $row_gaji_karyawan .= '<tr>
-                                                    <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                    <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                                </tr>';
+                          
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_gaji_karyawan .= '<tr>
+                                                      <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                      <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                                  </tr>';
+                          }
                       ?>
                       
                       <tr>
@@ -244,10 +251,13 @@
                           }
 
                           $total_pengeluaran += $total_listrik;
-                          $row_listrik .= '<tr>
-                                                    <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                    <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                                </tr>';
+                          
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_listrik .= '<tr>
+                                                <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                             </tr>';
+                          }
                       ?>
                       <tr>
                         <td class="p-2">
@@ -287,10 +297,13 @@
                           }
 
                           $total_pengeluaran += $total_internet;
-                          $row_internet .= '<tr>
-                                                    <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                    <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                                </tr>';
+                          
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_internet .= '<tr>
+                                                <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                              </tr>';
+                          }
                       ?>
 
                       <tr>
@@ -331,10 +344,13 @@
                           }
 
                           $total_pengeluaran += $total_perlengkapan_toko;
-                          $row_perlengkapan_toko .= '<tr>
-                                                        <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                        <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                                    </tr>';
+                          
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_perlengkapan_toko .= '<tr>
+                                                          <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                          <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                                      </tr>';
+                          }
                       ?>
                       <tr>
                         <td class="p-2">
@@ -374,10 +390,12 @@
                           }
 
                           $total_pengeluaran += $total_penyusutan;
-                          $row_penyusutan .= '<tr>
-                                                  <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                  <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                              </tr>';
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_penyusutan .= '<tr>
+                                                    <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                    <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                                </tr>';
+                          }
                       ?>
 
                       <tr>
@@ -418,10 +436,12 @@
                           }
 
                           $total_pengeluaran += $total_transport;
-                          $row_transport .= '<tr>
-                                                  <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                  <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                              </tr>';
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_transport .= '<tr>
+                                                    <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                    <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                                </tr>';
+                          }
                       ?>
 
                       <tr>
@@ -462,10 +482,13 @@
                           }
 
                           $total_pengeluaran += $total_tak_terduga;
-                          $row_tak_terduga .= '<tr>
-                                                  <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
-                                                  <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                              </tr>';
+
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_tak_terduga .= '<tr>
+                                                    <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
+                                                    <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
+                                                </tr>';
+                          }
                       ?>
 
                       <tr>
@@ -506,10 +529,13 @@
                           }
 
                           $total_pengeluaran += $total_lain_lain;
-                          $row_lain_lain .= '<tr>
+                          
+                          if(mysqli_num_rows($pend_query) > 0){
+                            $row_lain_lain .= '<tr>
                                                   <td class="px-1" style="border-top:unset;border-bottom:unset">&nbsp;</td>
                                                   <td style="border-top:unset;border-bottom:unset" class="px-1">&nbsp;</td>
-                                              </tr>';
+                                               </tr>';
+                          }
                       ?>
 
                       <tr>

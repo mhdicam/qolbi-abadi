@@ -96,18 +96,20 @@
         
         else {
             if(!$_POST['id']){
-                if(tambahIncomesExpenses($_POST)){
-                    echo "
+                if(!$_POST['delete']){
+                    if(tambahIncomesExpenses($_POST)){
+                        echo "
+                                <script>
+                                    document.location.href = '?incomes-expenses=$incomes_expenses&type=$type';
+                                </script>
+                            ";
+                    } else {
+                        echo "
                             <script>
-                                document.location.href = '?incomes-expenses=$incomes_expenses&type=$type';
+                                alert('Data gagal ditambahkan');
                             </script>
                         ";
-                } else {
-                    echo "
-                        <script>
-                            alert('Data gagal ditambahkan');
-                        </script>
-                    ";
+                    }
                 }
             } else {
                 if(updateIncomesExpenses($_POST)){
@@ -209,6 +211,7 @@
                                         <th>Nama</th>
                                         <th>Total</th>
                                         <th>Real Income</th>
+                                        <th>Payment Type</th>
                                         <th style="text-align: center;">Aksi</th>
                                     </tr>
                                 </thead>
@@ -221,6 +224,7 @@
                                         <th></th>
                                         <th>Grand Total</th>
                                         <th class="text-right grand-total">Rp. 0</th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -233,6 +237,7 @@
                                         <th>Harga</th>
                                         <th>Qty</th>
                                         <th>Total</th>
+                                        <th>Payment Type</th>
                                         <th style="text-align: center;">Aksi</th>
                                     </tr>
                                 </thead>
@@ -245,6 +250,7 @@
                                         <th></th>
                                         <th>Grand Total</th>
                                         <th class="text-right grand-total">Rp. 0</th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -255,6 +261,7 @@
                                         <th>No.</th>
                                         <th>Nama</th>
                                         <th>Total</th>
+                                        <th>Payment Type</th>
                                         <th style="text-align: center;">Aksi</th>
                                     </tr>
                                 </thead>
@@ -265,6 +272,7 @@
                                         <th></th>
                                         <th>Grand Total</th>
                                         <th class="text-right grand-total">Rp. 0</th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -280,6 +288,7 @@
                                         <th>Bonus Omset</th>
                                         <th>Overtime</th>
                                         <th>Total</th>
+                                        <th>Payment Type</th>
                                         <th style="text-align: center;">Aksi</th>
                                     </tr>
                                 </thead>
@@ -295,6 +304,7 @@
                                         <th></th>
                                         <th>Grand Total</th>
                                         <th class="text-right grand-total">Rp. 0</th>
+                                        <th></th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -736,8 +746,8 @@
 
             else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                 $('.penambahan-aset').addClass('d-none');
-                $('.qty-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'qty');
-                $('.harga-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'harga');
+                $('.qty-pengeluaran').prop('disabled', false).prop('required', true).prop('name', 'qty');
+                $('.harga-pengeluaran').prop('disabled', false).prop('required', true).prop('name', 'harga');
                 if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                     $('#modal-pengeluaran-gaji').modal('show');
                     $('#modal-pengeluaran-gaji-title').text('Tambah Data Gaji Karyawan');
@@ -775,8 +785,8 @@
 
             else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                 $('.penambahan-aset').addClass('d-none');
-                $('.qty-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'qty');
-                $('.harga-pengeluaran').prop('disabled', false).prop('required', true).removeAttr('name', 'harga');
+                $('.qty-pengeluaran').prop('disabled', false).prop('required', true).prop('name', 'qty');
+                $('.harga-pengeluaran').prop('disabled', false).prop('required', true).prop('name', 'harga');
                 if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                     $('#modal-pengeluaran-gaji').modal('show');
                     $('#modal-pengeluaran-gaji-title').text('Edit Data Gaji Karyawan');
@@ -861,19 +871,19 @@
                 data: $('.form-filter').serialize(),
                 beforeSend: function(data){
                     if(selIe.val() === 'cGVuZGFwYXRhbg=='){
-                        $('.pendapatan-revenue-table tbody').html('<tr><td class="text-center" colspan="6">Mengambil data...</td>')
+                        $('.pendapatan-revenue-table tbody').html('<tr><td class="text-center" colspan="7">Mengambil data...</td>')
                     } else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                         if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
-                            $('.pengeluaran-gaji-table tbody').html('<tr><td class="text-center" colspan="9">Mengambil data...</td>')
+                            $('.pengeluaran-gaji-table tbody').html('<tr><td class="text-center" colspan="10">Mengambil data...</td>')
                         } else {
-                            $('.pengeluaran-table tbody').html('<tr><td class="text-center" colspan="6">Mengambil data...</td>')
+                            $('.pengeluaran-table tbody').html('<tr><td class="text-center" colspan="7">Mengambil data...</td>')
                         }
                     }
                 },
                 success: function(response){
                     if(response.success){
                         if(selIe.val() === 'cGVuZGFwYXRhbg==' && selTypeIe.val()){
-                            let tbody = '<tr><td class="text-center" colspan="6">Tidak ada data</td>';
+                            let tbody = '<tr><td class="text-center" colspan="7">Tidak ada data</td>';
                             if(response.data.length > 0){
                                 tbody = '';
                                 let no = 1;
@@ -884,6 +894,7 @@
                                                 <td>${item.nama}</td>
                                                 <td class="text-right">${item.total_idr_format}</td>
                                                 <td class="text-right">${item.real_income_idr_format}</td>
+                                                <td class="text-center">${item.payment_type}</td>
                                                 <td class="text-center">
                                                     <button class="btn btn-sm btn-primary btn-edit" data-id="${item.id}"><i class="fa fa-pencil"></i></button>
                                                     <button class="btn btn-sm btn-danger btn-delete" data-id="${item.id}"><i class="fa fa-trash"></i></button>
@@ -897,7 +908,7 @@
                             $('.pendapatan-revenue-table').find('.grand-total').text(response.grand_total_idr_format);
                         } else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                             if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
-                                let tbody = '<tr><td class="text-center" colspan="9">Tidak ada data</td>';
+                                let tbody = '<tr><td class="text-center" colspan="10">Tidak ada data</td>';
                                 if(response.data.length > 0){
                                     tbody = '';
                                     let no = 1;
@@ -911,6 +922,7 @@
                                                     <td class="text-right">${item.bonus_omset_idr_format}</td>
                                                     <td class="text-right">${item.overtime_idr_format}</td>
                                                     <td class="text-right">${item.total_idr_format}</td>
+                                                    <td class="text-center">${item.payment_type}</td>
                                                     <td class="text-center">
                                                         <a href="slip-gaji-karyawan?id=${item.gk}" class="btn btn-sm btn-success" target="_blank" title="Slip Gaji"><i class="fa fa-file-text"></i> Slip Gaji</a>
                                                         <button class="btn btn-sm btn-primary btn-edit" data-id="${item.id}"><i class="fa fa-pencil"></i></button>
@@ -925,7 +937,7 @@
                                 $('.pengeluaran-gaji-table').find('.grand-total').text(response.grand_total_idr_format);
                             } 
                             else if(selTypeIe.val() === '<?= base64_encode('perlengkapan_toko') ?>') {
-                                let tbody = '<tr><td class="text-center" colspan="4">Tidak ada data</td>';
+                                let tbody = '<tr><td class="text-center" colspan="5">Tidak ada data</td>';
                                 if(response.data.length > 0){
                                     tbody = '';
                                     let no = 1;
@@ -934,6 +946,7 @@
                                                     <td>${no++}</td>
                                                     <td>${item.nama}</td>
                                                     <td class="text-right">${item.total_idr_format}</td>
+                                                    <td class="text-center">${item.payment_type}</td>
                                                     <td class="text-center">
                                                         <button class="btn btn-sm btn-success btn-show-perlengkapan-toko" data-id="${item.id}"><i class="fa fa-eye"></i></button>
                                                         <button class="btn btn-sm btn-primary btn-edit" data-id="${item.id}"><i class="fa fa-pencil"></i></button>
@@ -949,7 +962,7 @@
                             }
                             
                             else {
-                                let tbody = '<tr><td class="text-center" colspan="6">Tidak ada data</td>';
+                                let tbody = '<tr><td class="text-center" colspan="7">Tidak ada data</td>';
                                 if(response.data.length > 0){
                                     tbody = '';
                                     let no = 1;
@@ -960,6 +973,7 @@
                                                     <td>${item.harga_idr_format}</td>
                                                     <td class="text-right">${item.qty}</td>
                                                     <td class="text-right">${item.total_idr_format}</td>
+                                                    <td class="text-center">${item.payment_type}</td>
                                                     <td class="text-center">
                                                         <button class="btn btn-sm btn-primary btn-edit" data-id="${item.id}"><i class="fa fa-pencil"></i></button>
                                                         <button class="btn btn-sm btn-danger btn-delete" data-id="${item.id}"><i class="fa fa-trash"></i></button>

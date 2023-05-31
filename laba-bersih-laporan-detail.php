@@ -136,7 +136,7 @@
   $lb_pendapatan_lain = 0;
   $lb_pengeluaran_gaji = 0;
   $labaBersih = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = $sessionCabang AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-  $labaBersihGaji = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = $sessionCabang AND MONTH(tanggal) BETWEEN '".$bulan_awal."' AND '".$bulan_akhir."' AND YEAR(tanggal) BETWEEN '".$tahun_awal."' AND '".$tahun_akhir."'");
+  // $labaBersihGaji = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = $sessionCabang AND MONTH(tanggal) BETWEEN '".$bulan_awal."' AND '".$bulan_akhir."' AND YEAR(tanggal) BETWEEN '".$tahun_awal."' AND '".$tahun_akhir."'");
   
   $lb_pendapatan_lain = 0;
   $lb_pengeluaran_gaji = 0;
@@ -157,11 +157,12 @@
         $lb_pengeluaran_bensin              += $row['lb_pengeluaran_bensin'];
         $lb_pengeluaran_tak_terduga         += $row['lb_pengeluaran_tak_terduga'];
         $lb_pengeluaran_lain                += $row['lb_pengeluaran_lain']; 
-  endwhile;
-
-  while($row = mysqli_fetch_assoc($labaBersihGaji)):
         $lb_pengeluaran_gaji                += $row['lb_pengeluaran_gaji'];
   endwhile;
+
+  // while($row = mysqli_fetch_assoc($labaBersihGaji)):
+  //       $lb_pengeluaran_gaji                += $row['lb_pengeluaran_gaji'];
+  // endwhile;
 ?>
     <section class="laporan-laba-bersih">
         <div class="container">

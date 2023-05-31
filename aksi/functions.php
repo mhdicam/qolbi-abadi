@@ -3317,22 +3317,25 @@ function tambahPendapatan($data){
 					VALUES
 				(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
-		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
-
-		if(!$laba_bersih){
-			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
-				VALUES
-				('$real_income', 0, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
-		} else {
-			$total_laba_pendapatan = $laba_bersih['lb_pendapatan_lain'] + $real_income;
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
-		}
-
 		if ($stmt = $conn->prepare($query)) {
 			$stmt->bind_param('ssssssssss', $incomes_expenses, $jenis, $nama, $total, $real_income, $jenis_pembayaran, $tanggal, $sessionCabang, $created_at, $updated_at);
 			if ($stmt->execute()) {
 				$stmt->close();
+				
+				/** INSERT OR UPDATE LABA BERSIH */
+				$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+				$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+				$sum_incomes_expenses = sumIncomesExpenses(['pendapatan_lain', 'revenue'], $tanggal, $tanggal, $sessionCabang);
+				$lb_pendapatan_lain = $sum_incomes_expenses['sum_real_income'] != null ? $sum_incomes_expenses['sum_real_income'] : 0;
+
+				if(!$laba_bersih){
+					mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+						VALUES
+						('$lb_pendapatan_lain', 0, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+				} else {
+					mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$lb_pendapatan_lain', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+				}
 			}
 		}
 		$conn->commit();
@@ -3355,6 +3358,7 @@ function updatePendapatan($data){
 	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
 	$tanggal = $data['tanggal'];
 	$updated_at = date('Y-m-d H:i:s');
+	$created_at = date('Y-m-d H:i:s');
 
 	$revenue_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
 
@@ -3363,18 +3367,34 @@ function updatePendapatan($data){
 	}
 
 	$revenue = mysqli_fetch_assoc($revenue_query);
-	$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
-	$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
 	
 	$conn->begin_transaction();
 	try {
 		$query = "UPDATE laba_bersih_detail SET nama = ?, total = ?, real_income = ?, jenis_pembayaran = ?, tanggal = ?, cabang = ?, updated_at = ? WHERE id = ?";
-		$total_laba_pendapatan = ($laba_bersih['lb_pendapatan_lain'] - $revenue['real_income']) + $real_income;
-		mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		if ($stmt = $conn->prepare($query)) {
 			$stmt->bind_param('sssssssi', $nama, $total, $real_income, $jenis_pembayaran, $tanggal, $sessionCabang, $updated_at, $id);
 			if ($stmt->execute()) {
 				$stmt->close();
+
+				/** ROLLBACK LABA BERSIH */
+				$tanggal_pendapatan = $revenue['tanggal'];
+				$total_rollback = $revenue['real_income'];
+				mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain=lb_pendapatan_lain - $total_rollback, updated_at='$updated_at' WHERE tanggal='$tanggal_pendapatan' AND lb_cabang='$sessionCabang'");
+
+				/** INSERT OR UPDATE LABA BERSIH */
+				$laba_bersih_query = mysqli_query($conn, "SELECT lb_id FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+				$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+				$sum_incomes_expenses = sumIncomesExpenses(['pendapatan_lain', 'revenue'], $tanggal, $tanggal, $sessionCabang);
+				$lb_pendapatan_lain = $sum_incomes_expenses['sum_real_income'] != null ? $sum_incomes_expenses['sum_real_income'] : 0;
+
+				if(!$laba_bersih){
+					mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+						VALUES
+						('$lb_pendapatan_lain', 0, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+				} else {
+					mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$lb_pendapatan_lain', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+				}
 			}
 		}
 
@@ -3396,7 +3416,8 @@ function tambahIncomesExpenses($data){
 	$nama = htmlspecialchars($data['nama']);
 	$harga = isset($data['harga']) ? str_replace(',', '', $data['harga']) : 0;
 	$qty = isset($data['qty']) ? $data['qty'] : 0;
-	$total = isset($data['total']) ? str_replace(',', '', $data['total']) : 0;
+	// $total = isset($data['total']) ? str_replace(',', '', $data['total']) : 0;
+	$total = $harga * $qty;
 	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
 	$tanggal = $data['tanggal'];
 	$created_at = date('Y-m-d H:i:s');
@@ -3415,68 +3436,73 @@ function tambahIncomesExpenses($data){
 			if ($stmt->execute()) {
 				$laba_bersih_detail_id = $conn->insert_id;
 				$stmt->close();
-			}
-		}
 
-		/** PENAMBAHAN ASET PENGELUARAN PERLENGKAPAN TOKO */
-		if($jenis == 'perlengkapan_toko'){
-			if(isset($_POST['nama_barang'])){
-				$query_penambahan_aset = "INSERT INTO penambahan_aset(id_laba_bersih_detail, nama_barang, qty, harga, total, cabang, created_at, updated_at)
-											VALUES
-										 (?, ?, ?, ?, ?, ?, ?, ?)";
-				if ($stmt = $conn->prepare($query_penambahan_aset)) {
-					$total = 0;
-					for($i = 0; $i < count($_POST['nama_barang']); $i++){
-						$nama_barang = htmlspecialchars($_POST['nama_barang'][$i]);
-						$qty_barang = isset($_POST['qty_barang'][$i]) ? $_POST['qty_barang'][$i] : 0;
-						$harga_barang = isset($_POST['harga_barang'][$i]) ? str_replace(',', '', $_POST['harga_barang'][$i]) : 0;
-						$total_harga = $qty_barang * $harga_barang;
-						$stmt->bind_param("ssssssss", $laba_bersih_detail_id, $nama_barang, $qty_barang, $harga_barang, $total_harga, $sessionCabang, $created_at, $updated_at);
-						$stmt->execute();
-						$total += $total_harga;
+				/** PENAMBAHAN ASET PENGELUARAN PERLENGKAPAN TOKO */
+				if($jenis == 'perlengkapan_toko'){
+					if(isset($_POST['nama_barang'])){
+						$query_penambahan_aset = "INSERT INTO penambahan_aset(id_laba_bersih_detail, nama_barang, qty, harga, total, cabang, created_at, updated_at)
+													VALUES
+												(?, ?, ?, ?, ?, ?, ?, ?)";
+						if ($stmt = $conn->prepare($query_penambahan_aset)) {
+							$total = 0;
+							for($i = 0; $i < count($_POST['nama_barang']); $i++){
+								$nama_barang = htmlspecialchars($_POST['nama_barang'][$i]);
+								$qty_barang = isset($_POST['qty_barang'][$i]) ? $_POST['qty_barang'][$i] : 0;
+								$harga_barang = isset($_POST['harga_barang'][$i]) ? str_replace(',', '', $_POST['harga_barang'][$i]) : 0;
+								$total_harga = $qty_barang * $harga_barang;
+								$stmt->bind_param("ssssssss", $laba_bersih_detail_id, $nama_barang, $qty_barang, $harga_barang, $total_harga, $sessionCabang, $created_at, $updated_at);
+								$stmt->execute();
+								$total += $total_harga;
+							}
+
+							mysqli_query($conn, "UPDATE laba_bersih_detail SET total='$total' WHERE id='$laba_bersih_detail_id' AND cabang='$sessionCabang'");
+						}
 					}
-
-					mysqli_query($conn, "UPDATE laba_bersih_detail SET total='$total' WHERE id='$laba_bersih_detail_id' AND cabang='$sessionCabang'");
 				}
+
+				/** INSERT OR UPDATE LABA BERSIH */
+				$sum_listrik = sumIncomesExpenses('listrik', $tanggal, $tanggal, $sessionCabang);
+				$lb_pengeluaran_listrik = $sum_listrik['sum_total'] != null ? $sum_listrik['sum_total'] : 0;
+
+				$sum_internet = sumIncomesExpenses('telepon_internet', $tanggal, $tanggal, $sessionCabang);
+				$lb_pengeluaran_tlpn_internet = $sum_internet['sum_total'] != null ? $sum_internet['sum_total'] : 0;
+
+				$sum_ptoko = sumIncomesExpenses('perlengkapan_toko', $tanggal, $tanggal, $sessionCabang);
+				$lb_pengeluaran_perlengkapan_toko = $sum_ptoko['sum_total'] != null ? $sum_ptoko['sum_total'] : 0;
+
+				$sum_penyusutan = sumIncomesExpenses('biaya_penyusutan', $tanggal, $tanggal, $sessionCabang);
+				$lb_pengeluaran_biaya_penyusutan = $sum_penyusutan['sum_total'] != null ? $sum_penyusutan['sum_total'] : 0;
+
+				$sum_bensin = sumIncomesExpenses('bensin', $tanggal, $tanggal, $sessionCabang);
+				$lb_pengeluaran_bensin = $sum_bensin['sum_total'] != null ? $sum_bensin['sum_total'] : 0;
+				
+				$sum_tak_terduga = sumIncomesExpenses('tak_terduga', $tanggal, $tanggal, $sessionCabang);
+				$lb_pengeluaran_tak_terduga = $sum_tak_terduga['sum_total'] != null ? $sum_tak_terduga['sum_total'] : 0;
+
+				$sum_lain = sumIncomesExpenses('lain_lain', $tanggal, $tanggal, $sessionCabang);
+				$lb_pengeluaran_lain = $sum_lain['sum_total'] != null ? $sum_lain['sum_total'] : 0;
+
+				$laba_bersih_query = mysqli_query($conn, "SELECT lb_id FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+				$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+				if(!$laba_bersih){
+					mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+						VALUES
+						('0', '0', '$lb_pengeluaran_listrik', '$lb_pengeluaran_tlpn_internet', '$lb_pengeluaran_perlengkapan_toko', '$lb_pengeluaran_biaya_penyusutan', '$lb_pengeluaran_bensin', '$lb_pengeluaran_tak_terduga', '$lb_pengeluaran_lain', '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+				} else {
+					mysqli_query($conn, "UPDATE laba_bersih
+											SET lb_pengeluaran_listrik='$lb_pengeluaran_listrik',
+											lb_pengeluaran_tlpn_internet='$lb_pengeluaran_tlpn_internet',
+											lb_pengeluaran_perlengkapan_toko='$lb_pengeluaran_perlengkapan_toko',
+											lb_pengeluaran_biaya_penyusutan='$lb_pengeluaran_biaya_penyusutan',
+											lb_pengeluaran_bensin='$lb_pengeluaran_bensin',
+											lb_pengeluaran_tak_terduga='$lb_pengeluaran_tak_terduga',
+											lb_pengeluaran_lain='$lb_pengeluaran_lain',
+											updated_at='$updated_at'
+											WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+				}
+
 			}
-		}
-		
-		$lb_pendapatan_lain = 0;
-		$lb_pengeluaran_gaji = 0;
-		$lb_pengeluaran_listrik = $jenis == 'listrik' ? $total : 0;
-		$lb_pengeluaran_tlpn_internet = $jenis == 'telepon_internet' ? $total : 0;
-		$lb_pengeluaran_perlengkapan_toko = $jenis == 'perlengkapan_toko' ? $total : 0;
-		$lb_pengeluaran_biaya_penyusutan = $jenis == 'biaya_penyusutan' ? $total : 0;
-		$lb_pengeluaran_bensin = $jenis == 'bensin' ? $total : 0;
-		$lb_pengeluaran_tak_terduga = $jenis == 'tak_terduga' ? $total : 0;
-		$lb_pengeluaran_lain = $jenis == 'lain_lain' ? $total : 0;
-
-		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
-		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
-
-		if(!$laba_bersih){
-			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
-				VALUES
-				('$lb_pendapatan_lain', '$lb_pengeluaran_gaji', '$lb_pengeluaran_listrik', '$lb_pengeluaran_tlpn_internet', '$lb_pengeluaran_perlengkapan_toko', '$lb_pengeluaran_biaya_penyusutan', '$lb_pengeluaran_bensin', '$lb_pengeluaran_tak_terduga', '$lb_pengeluaran_lain', '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
-		} else {
-			$total_lb_pengeluaran_listrik = $laba_bersih['lb_pengeluaran_listrik'] + $lb_pengeluaran_listrik;
-			$total_lb_pengeluaran_tlpn_internet = $laba_bersih['lb_pengeluaran_tlpn_internet'] + $lb_pengeluaran_tlpn_internet;
-			$total_lb_pengeluaran_perlengkapan_toko = $laba_bersih['lb_pengeluaran_perlengkapan_toko'] + $lb_pengeluaran_perlengkapan_toko;
-			$total_lb_pengeluaran_biaya_penyusutan = $laba_bersih['lb_pengeluaran_biaya_penyusutan'] + $lb_pengeluaran_biaya_penyusutan;
-			$total_lb_pengeluaran_bensin = $laba_bersih['lb_pengeluaran_bensin'] + $lb_pengeluaran_bensin;
-			$total_lb_pengeluaran_tak_terduga = $laba_bersih['lb_pengeluaran_tak_terduga'] + $lb_pengeluaran_tak_terduga;
-			$total_lb_pengeluaran_lain = $laba_bersih['lb_pengeluaran_lain'] + $lb_pengeluaran_lain;
-			
-			mysqli_query($conn, "UPDATE laba_bersih
-									SET lb_pengeluaran_listrik='$total_lb_pengeluaran_listrik',
-									lb_pengeluaran_tlpn_internet='$total_lb_pengeluaran_tlpn_internet',
-									lb_pengeluaran_perlengkapan_toko='$total_lb_pengeluaran_perlengkapan_toko',
-									lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
-									lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
-									lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
-									lb_pengeluaran_lain='$total_lb_pengeluaran_lain',
-									updated_at='$updated_at'
-									WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		}
 
 		$conn->commit();
@@ -3496,7 +3522,8 @@ function updateIncomesExpenses($data){
 	$nama = htmlspecialchars($data['nama']);
 	$harga = isset($data['harga']) ? str_replace(',', '', $data['harga']) : 0;
 	$qty = isset($data['qty']) ? $data['qty'] : 0;
-	$total = isset($data['total']) ? str_replace(',', '', $data['total']) : 0;
+	// $total = isset($data['total']) ? str_replace(',', '', $data['total']) : 0;
+	$total = $harga * $qty;
 	$id = base64_decode($data['id']);
 	$jenis_pembayaran = base64_decode($data['jenis_pembayaran']);
 	$tanggal = $data['tanggal'];
@@ -3539,30 +3566,100 @@ function updateIncomesExpenses($data){
 				}
 			}
 		}
-		
-		$total_lb_pengeluaran_listrik = $jenis == 'listrik' ? ($laba_bersih['lb_pengeluaran_listrik'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_listrik'];
-		$total_lb_pengeluaran_tlpn_internet = $jenis == 'telepon_internet' ? ($laba_bersih['lb_pengeluaran_tlpn_internet'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_tlpn_internet'];
-		$total_lb_pengeluaran_perlengkapan_toko = $jenis == 'perlengkapan_toko' ? ($laba_bersih['lb_pengeluaran_perlengkapan_toko'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_perlengkapan_toko'];
-		$total_lb_pengeluaran_biaya_penyusutan = $jenis == 'biaya_penyusutan' ? ($laba_bersih['lb_pengeluaran_biaya_penyusutan'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_biaya_penyusutan'];
-		$total_lb_pengeluaran_bensin = $jenis == 'bensin' ? ($laba_bersih['lb_pengeluaran_bensin'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_bensin'];
-		$total_lb_pengeluaran_tak_terduga = $jenis == 'tak_terduga' ? ($laba_bersih['lb_pengeluaran_tak_terduga'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_tak_terduga'];
-		$total_lb_pengeluaran_lain = $jenis == 'lain_lain' ? ($laba_bersih['lb_pengeluaran_lain'] - $incomes_expenses['total']) + $total : $laba_bersih['lb_pengeluaran_lain'];
-		
-		mysqli_query($conn, "UPDATE laba_bersih
-								SET lb_pengeluaran_listrik='$total_lb_pengeluaran_listrik',
-								lb_pengeluaran_tlpn_internet='$total_lb_pengeluaran_tlpn_internet',
-								lb_pengeluaran_perlengkapan_toko='$total_lb_pengeluaran_perlengkapan_toko',
-								lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
-								lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
-								lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
-								lb_pengeluaran_lain='$total_lb_pengeluaran_lain',
-								updated_at='$updated_at'
-								WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 
 		if ($stmt = $conn->prepare($query)) {
 			$stmt->bind_param('ssssssssi', $nama, $harga, $qty, $total, $jenis_pembayaran, $tanggal, $sessionCabang, $updated_at, $id);
 			if ($stmt->execute()) {
 				$stmt->close();
+				
+				/** ROLLBACK LABA BERSIH */
+				$tanggal_incomes_expenses = $incomes_expenses['tanggal'];
+				$total_rollback = $incomes_expenses['total'];
+				$set_rollback_query = '';
+				
+				switch($jenis){
+					case 'listrik':
+						$set_rollback_query = "lb_pengeluaran_listrik=lb_pengeluaran_listrik - $total_rollback";
+						break;
+
+					case 'telepon_internet':
+						$set_rollback_query = "lb_pengeluaran_tlpn_internet=lb_pengeluaran_tlpn_internet - $total_rollback";
+						break;
+
+					case 'perlengkapan_toko':
+						$set_rollback_query = "lb_pengeluaran_perlengkapan_toko=lb_pengeluaran_perlengkapan_toko - $total_rollback";
+						break;
+
+					case 'biaya_penyusutan':
+						$set_rollback_query = "lb_pengeluaran_biaya_penyusutan=lb_pengeluaran_biaya_penyusutan - $total_rollback";
+						break;
+
+					case 'bensin':
+						$set_rollback_query = "lb_pengeluaran_bensin=lb_pengeluaran_bensin - $total_rollback";
+						break;
+
+					case 'tak_terduga':
+						$set_rollback_query = "lb_pengeluaran_tak_terduga=lb_pengeluaran_tak_terduga - $total_rollback";
+						break;
+
+					case 'lain_lain':
+						$set_rollback_query = "lb_pengeluaran_lain=lb_pengeluaran_lain - $total_rollback";
+						break;
+				}
+
+				mysqli_query($conn, "UPDATE laba_bersih SET $set_rollback_query, updated_at='$updated_at' WHERE tanggal='$tanggal_incomes_expenses' AND lb_cabang='$sessionCabang'");
+				
+				/** INSERT OR UPDATE LABA BERSIH */
+				$sum_listrik = sumIncomesExpenses('listrik', $tanggal, $tanggal, $sessionCabang);
+				$sum_listrik = $sum_listrik['sum_total'] != null ? $sum_listrik['sum_total'] : 0;
+				$lb_pengeluaran_listrik = $sum_listrik;
+
+				$sum_internet = sumIncomesExpenses('telepon_internet', $tanggal, $tanggal, $sessionCabang);
+				$sum_internet = $sum_internet['sum_total'] != null ? $sum_internet['sum_total'] : 0;
+				$lb_pengeluaran_tlpn_internet = $sum_internet;
+
+				$sum_ptoko = sumIncomesExpenses('perlengkapan_toko', $tanggal, $tanggal, $sessionCabang);
+				$sum_ptoko = $sum_ptoko['sum_total'] != null ? $sum_ptoko['sum_total'] : 0;
+				$lb_pengeluaran_perlengkapan_toko = $sum_ptoko;
+
+				$sum_penyusutan = sumIncomesExpenses('biaya_penyusutan', $tanggal, $tanggal, $sessionCabang);
+				$sum_penyusutan = $sum_penyusutan['sum_total'] != null ? $sum_penyusutan['sum_total'] : 0;
+				$lb_pengeluaran_biaya_penyusutan = $sum_penyusutan;
+
+				$sum_bensin = sumIncomesExpenses('bensin', $tanggal, $tanggal, $sessionCabang);
+				$sum_bensin = $sum_bensin['sum_total'] != null ? $sum_bensin['sum_total'] : 0;
+				$lb_pengeluaran_bensin = $sum_bensin;
+				
+				$sum_tak_terduga = sumIncomesExpenses('tak_terduga', $tanggal, $tanggal, $sessionCabang);
+				$sum_tak_terduga = $sum_tak_terduga['sum_total'] != null ? $sum_tak_terduga['sum_total'] : 0;
+				$lb_pengeluaran_tak_terduga = $sum_tak_terduga;
+
+				$sum_lain = sumIncomesExpenses('lain_lain', $tanggal, $tanggal, $sessionCabang);
+				$sum_lain = $sum_lain['sum_total'] != null ? $sum_lain['sum_total'] : 0;
+				$lb_pengeluaran_lain = $sum_lain;
+
+				$laba_bersih_query = mysqli_query($conn, "SELECT lb_id FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+				$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
+
+				if(!$laba_bersih){
+					mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+						VALUES
+						('0', '0', '$lb_pengeluaran_listrik', '$lb_pengeluaran_tlpn_internet', '$lb_pengeluaran_perlengkapan_toko', '$lb_pengeluaran_biaya_penyusutan', '$lb_pengeluaran_bensin', '$lb_pengeluaran_tak_terduga', '$lb_pengeluaran_lain', '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+						
+				} else {
+					mysqli_query($conn, "UPDATE laba_bersih
+											SET lb_pengeluaran_listrik='$lb_pengeluaran_listrik',
+											lb_pengeluaran_tlpn_internet='$lb_pengeluaran_tlpn_internet',
+											lb_pengeluaran_perlengkapan_toko='$lb_pengeluaran_perlengkapan_toko',
+											lb_pengeluaran_biaya_penyusutan='$lb_pengeluaran_biaya_penyusutan',
+											lb_pengeluaran_bensin='$lb_pengeluaran_bensin',
+											lb_pengeluaran_tak_terduga='$lb_pengeluaran_tak_terduga',
+											lb_pengeluaran_lain='$lb_pengeluaran_lain',
+											updated_at='$updated_at'
+											WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+					
+				}
+
 			}
 		}
 
@@ -3612,16 +3709,19 @@ function tambahGajiKaryawan($data){
 
 		$laba_bersih_detail_id = $conn->insert_id;
 
-		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		/** INSERT OR UPDATE LABA BERSIH */
+		$laba_bersih_query = mysqli_query($conn, "SELECT lb_id FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
 
+		$sum_incomes_expenses = sumIncomesExpenses('gaji_karyawan', $tanggal, $tanggal, $sessionCabang);
+		$lb_pengeluaran_gaji = $sum_incomes_expenses['sum_total'] != null ? $sum_incomes_expenses['sum_total'] : 0;
+
 		if(!$laba_bersih){
-			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pengeluaran_gaji, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
 				VALUES
-				(0, $total, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+				('$lb_pengeluaran_gaji', 0, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
 		} else {
-			$total_laba_gaji = $laba_bersih['lb_pengeluaran_gaji'] + $total;
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$lb_pengeluaran_gaji', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		}
 
 		mysqli_query($conn, "INSERT INTO gaji_karyawan(id_karyawan, periode, day, kddh, bonus_omset, salary, overtime, thp, laba_bersih_detail_id, cabang, created_at, updated_at)
@@ -3673,17 +3773,25 @@ function updateGajiKaryawan($data){
 		mysqli_query($conn, "UPDATE laba_bersih_detail SET nama='$nama', total='$total', jenis_pembayaran='$jenis_pembayaran', tanggal='$tanggal', updated_at='$updated_at' WHERE id='$id' AND cabang='$sessionCabang'");
 
 		$laba_bersih_detail_id = $lb_dt['id'];
+		
+		/** ROLLBACK LABA BERSIH */
+		$tanggal_pengeluaran = $lb_dt['tanggal'];
+		$total_rollback = $lb_dt['total'];
+		mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji=lb_pengeluaran_gaji - $total_rollback, updated_at='$updated_at' WHERE tanggal='$tanggal_pengeluaran' AND lb_cabang='$sessionCabang'");
 
-		$laba_bersih_query = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+		/** INSERT OR UPDATE LABA BERSIH */
+		$laba_bersih_query = mysqli_query($conn, "SELECT lb_id FROM laba_bersih WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		$laba_bersih = mysqli_fetch_assoc($laba_bersih_query);
 
+		$sum_incomes_expenses = sumIncomesExpenses('gaji_karyawan', $tanggal, $tanggal, $sessionCabang);
+		$lb_pengeluaran_gaji = $sum_incomes_expenses['sum_total'] != null ? $sum_incomes_expenses['sum_total'] : 0;
+
 		if(!$laba_bersih){
-			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pendapatan_lain, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
+			mysqli_query($conn, "INSERT INTO laba_bersih(lb_pengeluaran_gaji, lb_pengeluaran_gaji, lb_pengeluaran_listrik, lb_pengeluaran_tlpn_internet, lb_pengeluaran_perlengkapan_toko, lb_pengeluaran_biaya_penyusutan, lb_pengeluaran_bensin, lb_pengeluaran_tak_terduga, lb_pengeluaran_lain, lb_cabang, tanggal, created_at, updated_at)
 				VALUES
-				(0, $total, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
+				('$lb_pengeluaran_gaji', 0, 0, 0, 0, 0, 0, 0, 0, '$sessionCabang', '$tanggal', '$created_at', '$updated_at')");
 		} else {
-			$total_laba_gaji = ($laba_bersih['lb_pengeluaran_gaji'] - $lb_dt['total']) + $total;
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$lb_pengeluaran_gaji', updated_at='$updated_at' WHERE tanggal='$tanggal' AND lb_cabang='$sessionCabang'");
 		}
 
 		mysqli_query($conn, "UPDATE gaji_karyawan SET id_karyawan='$id_karyawan', periode='$periode', day='$day', kddh='$kddh', bonus_omset='$bonus_omset', salary='$salary', overtime='$overtime', thp='$total', updated_at='$updated_at' WHERE laba_bersih_detail_id='$laba_bersih_detail_id' AND cabang='$sessionCabang'");
@@ -3718,8 +3826,8 @@ function deleteIncomesExpenses($data){
 	if($incomes_expenses['incomes_expenses'] == 'pendapatan' && $incomes_expenses['jenis'] == 'revenue'){
 		$conn->begin_transaction();
 		try {
-			$total_laba_pendapatan = $laba_bersih['lb_pendapatan_lain'] - $incomes_expenses['real_income'];
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain='$total_laba_pendapatan' WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
+			$total_incomes_expenses = $incomes_expenses['real_income'];
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pendapatan_lain=lb_pendapatan_lain - $total_incomes_expenses WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
 			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
 			$conn->commit();
 			return true;
@@ -3730,8 +3838,8 @@ function deleteIncomesExpenses($data){
 	} else if($incomes_expenses['incomes_expenses'] == 'pengeluaran' && $incomes_expenses['jenis'] == 'gaji_karyawan'){
 		$conn->begin_transaction();
 		try {
-			$total_laba_gaji = $laba_bersih['lb_pengeluaran_gaji'] - $incomes_expenses['total'];
-			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji='$total_laba_gaji', updated_at='$updated_at' WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
+			$total_incomes_expenses = $incomes_expenses['total'];
+			mysqli_query($conn, "UPDATE laba_bersih SET lb_pengeluaran_gaji=lb_pengeluaran_gaji - $total_incomes_expenses, updated_at='$updated_at' WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
 			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
 			mysqli_query($conn, "DELETE FROM gaji_karyawan WHERE laba_bersih_detail_id = '$id' AND cabang='$sessionCabang'");
 			$conn->commit();
@@ -3743,25 +3851,41 @@ function deleteIncomesExpenses($data){
 	} else {
 		$conn->begin_transaction();
 		try {
-			$total_lb_pengeluaran_listrik = $jenis == 'listrik' ? $laba_bersih['lb_pengeluaran_listrik'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_listrik'];
-			$total_lb_pengeluaran_tlpn_internet = $jenis == 'telepon_internet' ? $laba_bersih['lb_pengeluaran_tlpn_internet'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_tlpn_internet'];
-			$total_lb_pengeluaran_perlengkapan_toko = $jenis == 'perlengkapan_toko' ? $laba_bersih['lb_pengeluaran_perlengkapan_toko'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_perlengkapan_toko'];
-			$total_lb_pengeluaran_biaya_penyusutan = $jenis == 'biaya_penyusutan' ? $laba_bersih['lb_pengeluaran_biaya_penyusutan'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_biaya_penyusutan'];
-			$total_lb_pengeluaran_bensin = $jenis == 'bensin' ? $laba_bersih['lb_pengeluaran_bensin'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_bensin'];
-			$total_lb_pengeluaran_tak_terduga = $jenis == 'tak_terduga' ? $laba_bersih['lb_pengeluaran_tak_terduga'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_tak_terduga'];
-			$total_lb_pengeluaran_lain = $jenis == 'lain_lain' ? $laba_bersih['lb_pengeluaran_lain'] - $incomes_expenses['total'] : $laba_bersih['lb_pengeluaran_lain'];
-			
-			mysqli_query($conn, "UPDATE laba_bersih
-									SET lb_pengeluaran_listrik='$total_lb_pengeluaran_listrik',
-									lb_pengeluaran_tlpn_internet='$total_lb_pengeluaran_tlpn_internet',
-									lb_pengeluaran_perlengkapan_toko='$total_lb_pengeluaran_perlengkapan_toko',
-									lb_pengeluaran_biaya_penyusutan='$total_lb_pengeluaran_biaya_penyusutan',
-									lb_pengeluaran_bensin='$total_lb_pengeluaran_bensin',
-									lb_pengeluaran_tak_terduga='$total_lb_pengeluaran_tak_terduga',
-									lb_pengeluaran_lain='$total_lb_pengeluaran_lain',
-									updated_at='$updated_at'
-									WHERE tanggal='$ie_tanggal' AND lb_cabang='$sessionCabang'");
 
+			$tanggal_incomes_expenses = $incomes_expenses['tanggal'];
+			$total_rollback = $incomes_expenses['total'];
+			$set_rollback_query = '';
+			switch($jenis){
+				case 'listrik':
+					$set_rollback_query = "lb_pengeluaran_listrik=lb_pengeluaran_listrik - $total_rollback";
+					break;
+
+				case 'telepon_internet':
+					$set_rollback_query = "lb_pengeluaran_tlpn_internet=lb_pengeluaran_tlpn_internet - $total_rollback";
+					break;
+
+				case 'perlengkapan_toko':
+					$set_rollback_query = "lb_pengeluaran_perlengkapan_toko=lb_pengeluaran_perlengkapan_toko - $total_rollback";
+					break;
+
+				case 'biaya_penyusutan':
+					$set_rollback_query = "lb_pengeluaran_biaya_penyusutan=lb_pengeluaran_biaya_penyusutan - $total_rollback";
+					break;
+
+				case 'bensin':
+					$set_rollback_query = "lb_pengeluaran_bensin=lb_pengeluaran_bensin - $total_rollback";
+					break;
+
+				case 'tak_terduga':
+					$set_rollback_query = "lb_pengeluaran_tak_terduga=lb_pengeluaran_tak_terduga - $total_rollback";
+					break;
+
+				case 'lain_lain':
+					$set_rollback_query = "lb_pengeluaran_lain=lb_pengeluaran_lain - $total_rollback";
+					break;
+			}
+
+			mysqli_query($conn, "UPDATE laba_bersih SET $set_rollback_query, updated_at='$updated_at' WHERE tanggal='$tanggal_incomes_expenses' AND lb_cabang='$sessionCabang'");
 			mysqli_query($conn, "DELETE FROM laba_bersih_detail WHERE id = '$id' AND cabang='$sessionCabang'");
 			mysqli_query($conn, "DELETE FROM penambahan_aset WHERE id_laba_bersih_detail = '$id' AND cabang='$sessionCabang'");
 			$conn->commit();
@@ -3773,6 +3897,21 @@ function deleteIncomesExpenses($data){
 	}
 
 	return false;
+}
+
+function sumIncomesExpenses($jenis, $start_date, $end_date, $cabang){
+	global $conn;
+	if(!is_array($jenis)){
+		$jenis = array($jenis);
+	}
+
+	$jenis = "'" . implode ( "', '", $jenis ) . "'";
+	$incomes_expenses = mysqli_query($conn, "SELECT SUM(total) as sum_total, SUM(real_income) as sum_real_income
+												FROM laba_bersih_detail
+												WHERE jenis IN ($jenis)
+												AND cabang='$cabang' AND tanggal>='$start_date' AND tanggal<='$end_date'");
+									
+	return mysqli_fetch_assoc($incomes_expenses);
 }
 
 ?>
