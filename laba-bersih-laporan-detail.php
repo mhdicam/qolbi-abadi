@@ -14,10 +14,10 @@
 <?php  
   $tanggal_awal = $_POST['tanggal_awal'];
   $tanggal_akhir = $_POST['tanggal_akhir'];
-  $bulan_awal = date('m', strtotime($tanggal_awal));
-  $bulan_akhir = date('m', strtotime($tanggal_akhir));
-  $tahun_awal = date('Y', strtotime($tanggal_awal));
-  $tahun_akhir = date('Y', strtotime($tanggal_akhir));
+  // $bulan_awal = date('m', strtotime($tanggal_awal));
+  // $bulan_akhir = date('m', strtotime($tanggal_akhir));
+  // $tahun_awal = date('Y', strtotime($tanggal_awal));
+  // $tahun_akhir = date('Y', strtotime($tanggal_akhir));
 ?>
 
 <?php  
