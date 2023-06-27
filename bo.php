@@ -44,39 +44,17 @@
       }
 
       $piutang = $total_piutang - $total_piutang_kembalian;
-      
-      $laba_pendapatan_lain = 0;
-      $laba_bersih = mysqli_query($conn, "SELECT lb_pendapatan_lain FROM laba_bersih WHERE lb_cabang = '".$cabang."' AND MONTH(tanggal)='".$bulan."' AND YEAR(tanggal)='".$tahun."'");
-      while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
-        $laba_pendapatan_lain += $row_laba_bersih['lb_pendapatan_lain'];
-      }
 
+      $laba_bersih_detail = mysqli_query($conn, "SELECT SUM(real_income) as total FROM laba_bersih_detail WHERE incomes_expenses='pendapatan' AND cabang = '".$cabang."' AND MONTH(tanggal) = '". $bulan. "' AND YEAR(tanggal) = '". $tahun. "'")->fetch_assoc();
+      $laba_pendapatan_lain = $laba_bersih_detail['total'];
       $total_pendapatan = $pendapatan_invoice + $piutang + $laba_pendapatan_lain;
       return $total_pendapatan;
     }
 
     function hitungPengeluaran($cabang, $bulan, $tahun){
       global $conn;
-      $lb_pengeluaran_gaji = 0;
-      $lb_pengeluaran_listrik = 0;
-      $lb_pengeluaran_tlpn_internet = 0;
-      $lb_pengeluaran_perlengkapan_toko = 0;
-      $lb_pengeluaran_biaya_penyusutan = 0;
-      $lb_pengeluaran_bensin = 0;
-      $lb_pengeluaran_tak_terduga = 0;
-      $lb_pengeluaran_lain = 0;
-
-      $laba_bersih = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = '".$cabang."' AND MONTH(tanggal)='".$bulan."' AND YEAR(tanggal)='".$tahun."'");
-      while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
-        $lb_pengeluaran_gaji                += $row_laba_bersih['lb_pengeluaran_gaji'];
-        $lb_pengeluaran_listrik             += $row_laba_bersih['lb_pengeluaran_listrik'];
-        $lb_pengeluaran_tlpn_internet       += $row_laba_bersih['lb_pengeluaran_tlpn_internet'];
-        $lb_pengeluaran_perlengkapan_toko   += $row_laba_bersih['lb_pengeluaran_perlengkapan_toko']; 
-        $lb_pengeluaran_biaya_penyusutan    += $row_laba_bersih['lb_pengeluaran_biaya_penyusutan'];
-        $lb_pengeluaran_bensin              += $row_laba_bersih['lb_pengeluaran_bensin'];
-        $lb_pengeluaran_tak_terduga         += $row_laba_bersih['lb_pengeluaran_tak_terduga'];
-        $lb_pengeluaran_lain                += $row_laba_bersih['lb_pengeluaran_lain']; 
-      }
+      $laba_bersih_detail = mysqli_query($conn, "SELECT SUM(total) as total FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND cabang = '".$cabang."' AND MONTH(tanggal) = '". $bulan. "' AND YEAR(tanggal) = '". $tahun. "'")->fetch_assoc();
+      $laba_pengeluaran = $laba_bersih_detail['total'];
       
       $total_hutang = 0;
       $q_hutang = $conn->query("SELECT hutang.hutang_nominal, hutang.hutang_cabang FROM hutang WHERE hutang_cabang = '".$cabang."' AND MONTH(hutang_date)='".$bulan."' AND YEAR(hutang_date)='".$tahun."'");
@@ -91,14 +69,14 @@
       }
 
       $hutang = $total_hutang - $total_hutang_kembalian;
-      $total_pengeluaran = $lb_pengeluaran_gaji + $lb_pengeluaran_listrik + $lb_pengeluaran_tlpn_internet + $lb_pengeluaran_perlengkapan_toko + $lb_pengeluaran_biaya_penyusutan + $lb_pengeluaran_bensin + $lb_pengeluaran_tak_terduga + $lb_pengeluaran_lain + $hutang;
+      $total_pengeluaran = $laba_pengeluaran + $hutang;
 
       return $total_pengeluaran;
     }
 
-    $dataset_pemasukan = [];
-
     $query_toko = $sessionCabang == 0 ? "SELECT toko_nama, toko_cabang FROM toko" : "SELECT toko_nama, toko_cabang FROM toko WHERE toko_cabang=$sessionCabang";
+    
+    $dataset_pemasukan = [];
     $q_toko = mysqli_query($conn, $query_toko);
     while($toko = mysqli_fetch_array($q_toko)){
       $arr_pemasukan_value = [];
@@ -313,36 +291,13 @@
                       <tbody>
                         <?php
                           $no = 1;
-                          $query_pendapatan = $sessionCabang == 0 ? "SELECT toko_nama, toko_cabang, (SELECT SUM(invoice_total) AS total_pendapatan FROM invoice WHERE invoice_cabang = toko_cabang AND invoice_piutang = 0 AND invoice_piutang_lunas = 0 AND MONTH(invoice_date) = '". date('m'). "' AND YEAR(invoice_date) = '". date('Y'). "') AS total_pendapatan FROM toko" : "SELECT toko_nama, toko_cabang, (SELECT SUM(invoice_total) AS total_pendapatan FROM invoice WHERE invoice_cabang = toko_cabang AND invoice_piutang = 0 AND invoice_piutang_lunas = 0 AND MONTH(invoice_date) = '". date('m'). "' AND YEAR(invoice_date) = '". date('Y'). "') AS total_pendapatan FROM toko WHERE toko_cabang=$sessionCabang";
-                          $q_pendapatan = mysqli_query($conn, $query_pendapatan);
-                          while($pendapatan = mysqli_fetch_array($q_pendapatan)):
-                            $pendapatan_invoice = $pendapatan['total_pendapatan'];
-
-                            $total_piutang = 0;
-                            $piutang = mysqli_query($conn, "SELECT piutang.piutang_id, piutang.piutang_date, piutang.piutang_nominal, piutang.piutang_cabang FROM piutang WHERE piutang_cabang = '".$pendapatan['toko_cabang']."' AND MONTH(piutang_date) = '". date('m'). "' AND YEAR(piutang_date) = '". date('Y'). "'");
-                            while ($row_piutang = mysqli_fetch_array($piutang)) {
-                              $total_piutang += $row_piutang['piutang_nominal'];
-                            }
-
-                            $total_piutang_kembalian = 0;
-                            $piutang_kembalian = mysqli_query($conn, "SELECT piutang_kembalian.pl_id, piutang_kembalian.pl_date, piutang_kembalian.pl_nominal, piutang_kembalian.pl_cabang FROM piutang_kembalian WHERE pl_cabang = '".$pendapatan['toko_cabang']."' AND MONTH(pl_date) = '". date('m'). "' AND YEAR(pl_date) = '". date('Y'). "'");
-                            while ($row_piutang_kembalian = mysqli_fetch_array($piutang_kembalian)) {
-                              $total_piutang_kembalian += $row_piutang_kembalian['pl_nominal'];
-                            }
-
-                            $piutang = $total_piutang - $total_piutang_kembalian;
-                            
-                            $laba_pendapatan_lain = 0;
-                            $laba_bersih = mysqli_query($conn, "SELECT lb_pendapatan_lain FROM laba_bersih WHERE lb_cabang = '".$pendapatan['toko_cabang']."' AND MONTH(tanggal) = '". date('m'). "' AND YEAR(tanggal) = '". date('Y'). "'");
-                            while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
-                              $laba_pendapatan_lain += $row_laba_bersih['lb_pendapatan_lain'];
-                            }
-
-                            $total_pendapatan = $pendapatan_invoice + $piutang + $laba_pendapatan_lain;
+                          $q_toko = mysqli_query($conn, $query_toko);
+                          while($toko = mysqli_fetch_array($q_toko)):
+                            $total_pendapatan = hitungPendapatan($toko['toko_cabang'], date('m'), date('Y'))
                         ?>
                             <tr>
                               <td><?= $no++ ?></td>
-                              <td><?= $pendapatan['toko_nama'] ?></td>
+                              <td><?= $toko['toko_nama'] ?></td>
                               <td><?= number_format($total_pendapatan) ?></td>
                             </tr>
                         <?php endwhile ?>
@@ -373,41 +328,7 @@
                           $no = 1;
                           $q_toko = mysqli_query($conn, $query_toko);
                           while($toko = mysqli_fetch_array($q_toko)):
-                            $lb_pengeluaran_gaji = 0;
-                            $lb_pengeluaran_listrik = 0;
-                            $lb_pengeluaran_tlpn_internet = 0;
-                            $lb_pengeluaran_perlengkapan_toko = 0;
-                            $lb_pengeluaran_biaya_penyusutan = 0;
-                            $lb_pengeluaran_bensin = 0;
-                            $lb_pengeluaran_tak_terduga = 0;
-                            $lb_pengeluaran_lain = 0;
-
-                            $laba_bersih = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = '".$toko['toko_cabang']."' AND MONTH(tanggal) = '". date('m'). "' AND YEAR(tanggal) = '". date('Y'). "'");
-                            while ($row_laba_bersih = mysqli_fetch_array($laba_bersih)) {
-                              $lb_pengeluaran_gaji                += $row_laba_bersih['lb_pengeluaran_gaji'];
-                              $lb_pengeluaran_listrik             += $row_laba_bersih['lb_pengeluaran_listrik'];
-                              $lb_pengeluaran_tlpn_internet       += $row_laba_bersih['lb_pengeluaran_tlpn_internet'];
-                              $lb_pengeluaran_perlengkapan_toko   += $row_laba_bersih['lb_pengeluaran_perlengkapan_toko']; 
-                              $lb_pengeluaran_biaya_penyusutan    += $row_laba_bersih['lb_pengeluaran_biaya_penyusutan'];
-                              $lb_pengeluaran_bensin              += $row_laba_bersih['lb_pengeluaran_bensin'];
-                              $lb_pengeluaran_tak_terduga         += $row_laba_bersih['lb_pengeluaran_tak_terduga'];
-                              $lb_pengeluaran_lain                += $row_laba_bersih['lb_pengeluaran_lain']; 
-                            }
-                            
-                            $total_hutang = 0;
-                            $q_hutang = $conn->query("SELECT hutang.hutang_nominal, hutang.hutang_cabang FROM hutang WHERE hutang_cabang = '".$toko['toko_cabang']."' AND MONTH(hutang_date)='".date('m')."' AND YEAR(hutang_date)='".date('Y')."'");
-                            while ($row_hutang = mysqli_fetch_array($q_hutang)) {
-                              $total_hutang += $row_hutang['hutang_nominal'];
-                            }
-
-                            $total_hutang_kembalian = 0;
-                            $q_hutang_kembalian = $conn->query("SELECT hutang_kembalian.hl_nominal, hutang_kembalian.hl_cabang FROM hutang_kembalian WHERE hl_cabang = '".$toko['toko_cabang']."' AND MONTH(hl_date)='".date('m')."' AND YEAR(hl_date)='".date('Y')."'");
-                            while ($row_hutang_kembalian = mysqli_fetch_array($q_hutang_kembalian)) {
-                              $total_hutang_kembalian += $row_hutang_kembalian['hl_nominal'];
-                            }
-
-                            $hutang = $total_hutang - $total_hutang_kembalian;
-                            $total_pengeluaran = $lb_pengeluaran_gaji + $lb_pengeluaran_listrik + $lb_pengeluaran_tlpn_internet + $lb_pengeluaran_perlengkapan_toko + $lb_pengeluaran_biaya_penyusutan + $lb_pengeluaran_bensin + $lb_pengeluaran_tak_terduga + $lb_pengeluaran_lain + $hutang;
+                            $total_pengeluaran = hitungPengeluaran($toko['toko_cabang'], date('m'), date('Y'));
                         ?>
                             <tr>
                               <td><?= $no++ ?></td>
