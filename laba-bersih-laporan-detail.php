@@ -14,10 +14,6 @@
 <?php  
   $tanggal_awal = $_POST['tanggal_awal'];
   $tanggal_akhir = $_POST['tanggal_akhir'];
-  // $bulan_awal = date('m', strtotime($tanggal_awal));
-  // $bulan_akhir = date('m', strtotime($tanggal_akhir));
-  // $tahun_awal = date('Y', strtotime($tanggal_awal));
-  // $tahun_akhir = date('Y', strtotime($tanggal_akhir));
 ?>
 
 <?php  
@@ -138,31 +134,30 @@
   $labaBersih = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = $sessionCabang AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
   // $labaBersihGaji = mysqli_query($conn, "SELECT * FROM laba_bersih WHERE lb_cabang = $sessionCabang AND MONTH(tanggal) BETWEEN '".$bulan_awal."' AND '".$bulan_akhir."' AND YEAR(tanggal) BETWEEN '".$tahun_awal."' AND '".$tahun_akhir."'");
   
-  $lb_pendapatan_lain = 0;
-  $lb_pengeluaran_gaji = 0;
-  $lb_pengeluaran_listrik = 0;
-  $lb_pengeluaran_tlpn_internet = 0;
-  $lb_pengeluaran_perlengkapan_toko = 0;
-  $lb_pengeluaran_biaya_penyusutan = 0;
-  $lb_pengeluaran_bensin = 0;
-  $lb_pengeluaran_tak_terduga = 0;
-  $lb_pengeluaran_lain = 0;
+  $and_where_pend_peng = " AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'";
+  $pendapatan_lain = mysqli_query($conn, "SELECT SUM(real_income) as total FROM laba_bersih_detail WHERE incomes_expenses='pendapatan'" . $and_where_pend_peng)->fetch_assoc();
+  
+  $pengeluaran_internet = mysqli_query($conn, "SELECT SUM(total) as total FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='telepon_internet'" . $and_where_pend_peng)->fetch_assoc();
 
-  while($row = mysqli_fetch_assoc($labaBersih)):
-        $lb_pendapatan_lain                 += $row['lb_pendapatan_lain'];
-        $lb_pengeluaran_listrik             += $row['lb_pengeluaran_listrik'];
-        $lb_pengeluaran_tlpn_internet       += $row['lb_pengeluaran_tlpn_internet'];
-        $lb_pengeluaran_perlengkapan_toko   += $row['lb_pengeluaran_perlengkapan_toko']; 
-        $lb_pengeluaran_biaya_penyusutan    += $row['lb_pengeluaran_biaya_penyusutan'];
-        $lb_pengeluaran_bensin              += $row['lb_pengeluaran_bensin'];
-        $lb_pengeluaran_tak_terduga         += $row['lb_pengeluaran_tak_terduga'];
-        $lb_pengeluaran_lain                += $row['lb_pengeluaran_lain']; 
-        $lb_pengeluaran_gaji                += $row['lb_pengeluaran_gaji'];
-  endwhile;
+  $lb_pendapatan_lain = $pendapatan_lain['total'];
+  $lb_pengeluaran_gaji = sumPengeluaran('gaji_karyawan', $tanggal_awal, $tanggal_akhir);
+  $lb_pengeluaran_listrik = sumPengeluaran('listrik', $tanggal_awal, $tanggal_akhir);
+  $lb_pengeluaran_tlpn_internet = sumPengeluaran('telepon_internet', $tanggal_awal, $tanggal_akhir);
+  $lb_pengeluaran_perlengkapan_toko = sumPengeluaran('perlengkapan_toko', $tanggal_awal, $tanggal_akhir);
+  $lb_pengeluaran_biaya_penyusutan = sumPengeluaran('biaya_penyusutan', $tanggal_awal, $tanggal_akhir);
+  $lb_pengeluaran_bensin = sumPengeluaran('bensin', $tanggal_awal, $tanggal_akhir);
+  $lb_pengeluaran_tak_terduga = sumPengeluaran('tak_terduga', $tanggal_awal, $tanggal_akhir);
+  $lb_pengeluaran_lain = sumPengeluaran('lain_lain', $tanggal_awal, $tanggal_akhir);
 
-  // while($row = mysqli_fetch_assoc($labaBersihGaji)):
-  //       $lb_pengeluaran_gaji                += $row['lb_pengeluaran_gaji'];
-  // endwhile;
+  function sumPengeluaran($jenis, $tgl_awal, $tgl_akhir){
+    global $conn;
+    global $sessionCabang;
+    $and_where_pend_peng = " AND cabang='$sessionCabang' AND tanggal BETWEEN '".$tgl_awal."' AND '".$tgl_akhir."'";
+    $pengeluaran = mysqli_query($conn, "SELECT SUM(total) as total FROM laba_bersih_detail WHERE incomes_expenses='pengeluaran' AND jenis='" . $jenis . "'" . $and_where_pend_peng)->fetch_assoc();
+
+    return $pengeluaran['total'];
+  }
+
 ?>
     <section class="laporan-laba-bersih">
         <div class="container">

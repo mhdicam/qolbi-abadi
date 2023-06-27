@@ -130,8 +130,8 @@
         
     }
     
-    $start_date = $_GET['start_date'] ? date('d M Y', strtotime($_GET['start_date'])) : date('d M Y');
-    $end_date = $_GET['end_date'] ? date('d M Y', strtotime($_GET['end_date'])) : date('d M Y');
+    $start_date = $_GET['start_date'] ? date('d M Y', strtotime($_GET['start_date'])) : date('01 M Y');
+    $end_date = $_GET['end_date'] ? date('d M Y', strtotime($_GET['end_date'])) : date('t M Y');
     $max_date = date('d M Y');
 
 ?>
