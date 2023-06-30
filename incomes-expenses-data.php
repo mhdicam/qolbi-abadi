@@ -26,7 +26,7 @@ if($_POST && $_SESSION['user_id'] != null){
         //                                                     WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
         //                                                     AND MONTH(b.tanggal) >= '$start_month_only_filter' AND MONTH(b.tanggal) <= '$end_month_only_filter'
         //                                                     AND YEAR(b.tanggal) >= '$start_year_only_filter' AND b.cabang='$cabang' AND YEAR(b.tanggal) <= '$end_year_only_filter'");
-            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.created_at as created_at, b.jenis_pembayaran as jenis_pembayaran, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
+            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.tanggal ,b.total, b.created_at as created_at, b.jenis_pembayaran as jenis_pembayaran, b.id as laba, c.nama_karyawan FROM gaji_karyawan as a
                                                             LEFT JOIN laba_bersih_detail as b ON a.laba_bersih_detail_id = b.id
                                                             LEFT JOIN karyawan as c ON c.id = a.id_karyawan
                                                             WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
@@ -37,6 +37,7 @@ if($_POST && $_SESSION['user_id'] != null){
                 $arr_data[] = [
                     'id' => base64_encode($row['laba']),
                     'gk' => base64_encode($row['id']),
+                    'tanggal' => $row['tanggal'],
                     'nama' => $row['nama_karyawan'],
                     'day' => $row['day'],
                     'kddh' => $row['kddh'],

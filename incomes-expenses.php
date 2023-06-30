@@ -233,6 +233,7 @@
                                 <thead>
                                     <tr>
                                         <th>No.</th>
+                                        <th>Tanggal</th>
                                         <th>Nama</th>
                                         <th>Harga</th>
                                         <th>Qty</th>
@@ -248,6 +249,7 @@
                                         <th></th>
                                         <th></th>
                                         <th></th>
+                                        <th></th>
                                         <th>Grand Total</th>
                                         <th class="text-right grand-total">Rp. 0</th>
                                         <th></th>
@@ -259,6 +261,7 @@
                                 <thead>
                                     <tr>
                                         <th>No.</th>
+                                        <th>Tanggal</th>
                                         <th>Nama</th>
                                         <th>Total</th>
                                         <th>Payment Type</th>
@@ -269,6 +272,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
+                                        <th></th>
                                         <th></th>
                                         <th>Grand Total</th>
                                         <th class="text-right grand-total">Rp. 0</th>
@@ -281,6 +285,7 @@
                                 <thead>
                                     <tr>
                                         <th>No.</th>
+                                        <th>Tanggal</th>
                                         <th>Nama</th>
                                         <th>Day</th>
                                         <th>Salary</th>
@@ -296,6 +301,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
+                                        <th></th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
@@ -908,13 +914,14 @@
                             $('.pendapatan-revenue-table').find('.grand-total').text(response.grand_total_idr_format);
                         } else if(selIe.val() === 'cGVuZ2VsdWFyYW4='){
                             if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
-                                let tbody = '<tr><td class="text-center" colspan="10">Tidak ada data</td>';
+                                let tbody = '<tr><td class="text-center" colspan="11">Tidak ada data</td>';
                                 if(response.data.length > 0){
                                     tbody = '';
                                     let no = 1;
                                     $.each(response.data, function(i, item){
                                         tbody += `<tr>
                                                     <td>${no++}</td>
+                                                    <td>${item.tanggal}</td>
                                                     <td>${item.nama}</td>
                                                     <td>${item.day}</td>
                                                     <td class="text-right">${item.salary_idr_format}</td>
@@ -937,13 +944,14 @@
                                 $('.pengeluaran-gaji-table').find('.grand-total').text(response.grand_total_idr_format);
                             } 
                             else if(selTypeIe.val() === '<?= base64_encode('perlengkapan_toko') ?>') {
-                                let tbody = '<tr><td class="text-center" colspan="5">Tidak ada data</td>';
+                                let tbody = '<tr><td class="text-center" colspan="6">Tidak ada data</td>';
                                 if(response.data.length > 0){
                                     tbody = '';
                                     let no = 1;
                                     $.each(response.data, function(i, item){
                                         tbody += `<tr>
                                                     <td>${no++}</td>
+                                                    <td>${item.tanggal}</td>
                                                     <td>${item.nama}</td>
                                                     <td class="text-right">${item.total_idr_format}</td>
                                                     <td class="text-center">${item.payment_type}</td>
@@ -962,13 +970,14 @@
                             }
                             
                             else {
-                                let tbody = '<tr><td class="text-center" colspan="7">Tidak ada data</td>';
+                                let tbody = '<tr><td class="text-center" colspan="8">Tidak ada data</td>';
                                 if(response.data.length > 0){
                                     tbody = '';
                                     let no = 1;
                                     $.each(response.data, function(i, item){
                                         tbody += `<tr>
                                                     <td>${no++}</td>
+                                                    <td>${item.tanggal}</td>
                                                     <td>${item.nama}</td>
                                                     <td>${item.harga_idr_format}</td>
                                                     <td class="text-right">${item.qty}</td>
