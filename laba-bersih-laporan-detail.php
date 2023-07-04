@@ -38,23 +38,27 @@
       WHERE invoice_cabang = '".$sessionCabang."' && invoice_piutang = 0 && invoice_piutang_lunas = 0 && invoice_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'
     ");
     while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
-    $totalPenjualan += $rowProduct['invoice_sub_total'];
+      $totalPenjualan += $rowProduct['invoice_sub_total'];
+    }
   ?>
-<?php } ?>
 <!-- End Total penjualan  -->
 
 
 <!-- Total HPP -->
 <?php  
-    $totalHpp       = 0;
-      $queryInvoice = $conn->query("SELECT invoice.invoice_id, invoice.invoice_date, invoice.invoice_cabang, invoice.invoice_total_beli, invoice.invoice_sub_total, invoice.penjualan_invoice
-        FROM invoice 
-        WHERE invoice_cabang = '".$sessionCabang."' && invoice_piutang = 0 && invoice_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'
-      ");
-    while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
-    $totalHpp += $rowProduct['invoice_total_beli'];
+    $totalHpp = 0;
+    // $queryInvoice = $conn->query("SELECT invoice.invoice_id, invoice.invoice_date, invoice.invoice_cabang, invoice.invoice_total_beli, invoice.invoice_sub_total, invoice.penjualan_invoice
+    //   FROM invoice 
+    //   WHERE invoice_cabang = '".$sessionCabang."' && invoice_piutang = 0 && invoice_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'
+    // ");
+    // while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
+    //   $totalHpp += $rowProduct['invoice_total_beli'];
+    // }
+    $queryInvoice = $conn->query("SELECT invoice_total, invoice_pembelian_cabang, invoice_hutang, invoice_date FROM invoice_pembelian WHERE invoice_pembelian_cabang = '".$sessionCabang."' && invoice_hutang = 0 && invoice_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
+    while ($rowInvoice = mysqli_fetch_array($queryInvoice)) {
+      $totalHpp += $rowInvoice['invoice_total'];
+    }
   ?>
-<?php } ?>
 <!-- End Total HPP -->
 
 
@@ -67,9 +71,9 @@
         WHERE piutang_cabang = '".$sessionCabang."' && piutang_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'
       ");
     while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
-    $totalPiutang += $rowProduct['piutang_nominal'];
+      $totalPiutang += $rowProduct['piutang_nominal'];
+    }
   ?>
-<?php } ?>
 <!-- End Total Piutang Cicilan -->
 
 <!-- Total Piutang Kembalian -->
@@ -80,9 +84,9 @@
         WHERE pl_cabang = '".$sessionCabang."' && pl_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'
       ");
     while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
-    $totalPiutangKembalian += $rowProduct['pl_nominal'];
+      $totalPiutangKembalian += $rowProduct['pl_nominal'];
+    }
   ?>
-<?php } ?>
 <!-- End Total Piutang Kembalian -->
 
 <!-- Piutang = Total Piutang - Total Piutang Kembalian -->
@@ -90,10 +94,6 @@
   $piutang = $totalPiutang - $totalPiutangKembalian;
 ?>
 <!-- End Piutang = Total Piutang - Total Piutang Kembalian -->
-
-
-
-
 
 <!-- Total Hutang Cicilan -->
 <?php  
@@ -103,9 +103,9 @@
         WHERE hutang_cabang = '".$sessionCabang."' && hutang_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'
       ");
     while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
-    $totalHutang += $rowProduct['hutang_nominal'];
+      $totalHutang += $rowProduct['hutang_nominal'];
+    }
   ?>
-<?php } ?>
 <!-- End Total Hutang Cicilan -->
 
 <!-- Total Hutang Kembalian -->
@@ -116,9 +116,9 @@
         WHERE hl_cabang = '".$sessionCabang."' && hl_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'
       ");
     while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
-    $totalHutangKembalian += $rowProduct['hl_nominal'];
+      $totalHutangKembalian += $rowProduct['hl_nominal'];
+    }
   ?>
-<?php } ?>
 <!-- End Total Hutang Kembalian -->
 
 <!-- Hutang = Total Hutang - Total Hutang Kembalian -->

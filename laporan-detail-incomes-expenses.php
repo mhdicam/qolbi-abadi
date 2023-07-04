@@ -48,11 +48,16 @@
 
     /** TOTAL HPP */
     $totalHpp = 0;
-    $queryInvoice = $conn->query("SELECT invoice.invoice_id, invoice.invoice_date, invoice.invoice_cabang, invoice.invoice_total_beli, invoice.invoice_sub_total, invoice.penjualan_invoice
-                                  FROM invoice 
-                                  WHERE invoice_cabang = '".$sessionCabang."' && invoice_piutang = 0 && invoice_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
-    while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
-      $totalHpp += $rowProduct['invoice_total_beli'];
+    // $queryInvoice = $conn->query("SELECT invoice.invoice_id, invoice.invoice_date, invoice.invoice_cabang, invoice.invoice_total_beli, invoice.invoice_sub_total, invoice.penjualan_invoice
+    //                               FROM invoice 
+    //                               WHERE invoice_cabang = '".$sessionCabang."' && invoice_piutang = 0 && invoice_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
+    // while ($rowProduct = mysqli_fetch_array($queryInvoice)) {
+    //   $totalHpp += $rowProduct['invoice_total_beli'];
+    // }
+    
+    $queryInvoice = $conn->query("SELECT invoice_total, invoice_pembelian_cabang, invoice_hutang, invoice_date FROM invoice_pembelian WHERE invoice_pembelian_cabang = '".$sessionCabang."' && invoice_hutang = 0 && invoice_date BETWEEN '".$tanggal_awal."' AND '".$tanggal_akhir."'");
+    while ($rowInvoice = mysqli_fetch_array($queryInvoice)) {
+      $totalHpp += $rowInvoice['invoice_total'];
     }
     /** END TOTAL HPP */
 
