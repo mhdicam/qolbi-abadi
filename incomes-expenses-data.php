@@ -30,7 +30,7 @@ if($_POST && $_SESSION['user_id'] != null){
                                                             LEFT JOIN laba_bersih_detail as b ON a.laba_bersih_detail_id = b.id
                                                             LEFT JOIN karyawan as c ON c.id = a.id_karyawan
                                                             WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang'
-                                                            AND DATE(b.created_at) >= '$start_date' AND DATE(b.created_at) <= '$end_date'
+                                                            AND DATE(b.tanggal) >= '$start_date' AND DATE(b.tanggal) <= '$end_date'
                                                             ");
 
             while($row = mysqli_fetch_assoc($incomes_expenses_query)){
@@ -96,7 +96,7 @@ if($_POST && $_SESSION['user_id'] != null){
         $data = null;
 
         if($incomes_expenses_decode == 'pengeluaran' && $jenis_decode == 'gaji_karyawan'){
-            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.total, b.id as laba, b.jenis_pembayaran, b.harga, b.qty, b.total, b.real_income, c.nama_karyawan, c.id as id_karyawan FROM gaji_karyawan as a
+            $incomes_expenses_query = mysqli_query($conn, "SELECT a.*, b.tanggal, b.total, b.id as laba, b.jenis_pembayaran, b.harga, b.qty, b.total, b.real_income, c.nama_karyawan, c.id as id_karyawan FROM gaji_karyawan as a
                                                             LEFT JOIN laba_bersih_detail as b ON a.laba_bersih_detail_id = b.id
                                                             LEFT JOIN karyawan as c ON c.id = a.id_karyawan
                                                             WHERE b.incomes_expenses='pengeluaran' AND b.jenis='gaji_karyawan' AND b.cabang='$cabang' AND b.id='$id'");
@@ -144,6 +144,7 @@ if($_POST && $_SESSION['user_id'] != null){
                 $data['thp'] = number_format($data['thp'], 0, ',', '');
                 $data['day'] = $data['day'];
                 $data['periode'] = $data['periode'];
+                $data['tanggal'] = $data['tanggal'];
                 $data['karyawan'] = base64_encode($data['id_karyawan']);
                 $data['id'] = base64_encode($data['laba']);
                 unset($data['id_karyawan']);

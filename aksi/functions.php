@@ -3682,7 +3682,8 @@ function tambahGajiKaryawan($data){
 	$id_karyawan = base64_decode($data['karyawan']);
 	$periode = $data['periode'];
 	// $tanggal = $data['periode'] . '-' . date('d');
-	$tanggal = date('Y-m-d');
+	// $tanggal = date('Y-m-d');
+	$tanggal = $data['tanggal'];
 	$kddh = $data['kddh'] != '' ? str_replace(',', '', $data['kddh']) : 0;
 	$bonus_omset = $data['bonus_omset'] != '' ? str_replace(',', '', $data['bonus_omset']) : 0;
 	$salary = $data['salary'] != '' ? str_replace(',', '', $data['salary']) : 0;
@@ -3746,6 +3747,7 @@ function updateGajiKaryawan($data){
 	$id_karyawan = base64_decode($data['karyawan']);
 	$periode = $data['periode'];
 	// $tanggal = $data['periode'] . '-' . date('d');
+	$tanggal = $data['tanggal'];
 	$kddh = $data['kddh'] != '' ? str_replace(',', '', $data['kddh']) : 0;
 	$bonus_omset = $data['bonus_omset'] != '' ? str_replace(',', '', $data['bonus_omset']) : 0;
 	$salary = $data['salary'] != '' ? str_replace(',', '', $data['salary']) : 0;
@@ -3768,7 +3770,7 @@ function updateGajiKaryawan($data){
 		$lb_dt_query = mysqli_query($conn, "SELECT * FROM laba_bersih_detail WHERE id='$id' AND cabang='$sessionCabang'");
 		$lb_dt = mysqli_fetch_assoc($lb_dt_query);
 
-		$tanggal = $lb_dt['tanggal'];
+		// $tanggal = $lb_dt['tanggal'];
 		$nama = $karyawan['nama_karyawan'];
 		mysqli_query($conn, "UPDATE laba_bersih_detail SET nama='$nama', total='$total', jenis_pembayaran='$jenis_pembayaran', tanggal='$tanggal', updated_at='$updated_at' WHERE id='$id' AND cabang='$sessionCabang'");
 

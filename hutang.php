@@ -1,7 +1,16 @@
 <?php 
   include '_header.php';
   include '_nav.php';
-  include '_sidebar.php'; 
+  include '_sidebar.php';
+
+  $sum_hutang = mysqli_query($conn, "SELECT 
+                                    SUM(a.invoice_kembali) as sisa_hutang,
+                                    SUM(a.invoice_total) as subtotal
+                                  FROM invoice_pembelian a
+                                  LEFT JOIN supplier b ON a.invoice_supplier = b.supplier_id where invoice_pembelian_cabang = $sessionCabang && invoice_hutang > 0")->fetch_assoc();
+
+  // $sum_hutang = $q_sum_hutang->fetch_assoc();
+  echo $sum_hutang['sisa_hutang'];
 ?>
 
 <?php  
@@ -46,7 +55,7 @@
             <!-- /.card-header -->
             <div class="card-body">
               <div class="table-auto">
-              <table id="example1" class="table table-bordered table-striped">
+              <table id="example1" class="table table-bordered table-striped" style="width: 100%;">
                 <thead>
                 <tr>
                   <th style="width: 6%;">No.</th>
@@ -55,13 +64,18 @@
                   <th>Supplier</th>
                   <th>Jatuh Tempo</th>
                   <th>Sub Total</th>
+                  <th>Sisa Hutang</th>
                   <!-- <th>Kasir</th> -->
                   <th style="text-align: center; width: 16%">Aksi</th>
                 </tr>
                 </thead>
-                <tbody>
-                
-                </tbody>
+                <tbody></tbody>
+                <tfoot>
+                  <th colspan="5" class="text-center">Jumlah</th>
+                  <th>Rp. <?= number_format($sum_hutang['subtotal'], 0, '.', '.') ?></th>
+                  <th>Rp. <?= number_format($sum_hutang['sisa_hutang'], 0, '.', '.') ?></th>
+                  <th></th>
+                </tfoot>
               </table>
             </div>
             </div>
@@ -87,6 +101,11 @@
              [
               {
                 "targets": 5,
+                  "render": $.fn.dataTable.render.number( '.', '', '', 'Rp. ' )
+                 
+              },
+              {
+                "targets": 6,
                   "render": $.fn.dataTable.render.number( '.', '', '', 'Rp. ' )
                  
               },

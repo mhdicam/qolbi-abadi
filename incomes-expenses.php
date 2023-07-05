@@ -545,7 +545,10 @@
                         <input type="hidden" name="id" value="" class="input-id" id="id">
                     </div>
                     <div class="row">
-                        <div class="form-group col-md-6"></div>
+                        <div class="form-group col-md-6">
+                            <label for="tanggal-transaksi">Tanggal Transaksi</label>
+                            <input type="date" id="tanggal-transaksi" name="tanggal" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                        </div>
                         <div class="form-group col-md-6">
                             <label for="">Periode</label>
                             <input type="text" name="periode" class="form-control periode" id="periode" autocomplete="off" required>
@@ -1022,6 +1025,7 @@
                             if(selTypeIe.val() === '<?= base64_encode('gaji_karyawan') ?>'){
                                 $('.form-pengeluaran-gaji').find('#id').val(response.data.id);
                                 $('.form-pengeluaran-gaji').find('#periode').val(response.data.periode);
+                                $('.form-pengeluaran-gaji').find('#tanggal-transaksi').val(response.data.tanggal);
                                 $('.form-pengeluaran-gaji').find('#karyawan').val(response.data.karyawan).change();
                                 $('.form-pengeluaran-gaji').find('#kddh').val(numeral(response.data.kddh).format('0,0'));
                                 $('.form-pengeluaran-gaji').find('#day').val(response.data.day);

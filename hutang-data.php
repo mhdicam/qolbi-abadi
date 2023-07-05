@@ -45,7 +45,8 @@ $columns = array(
     array( 'db' => 'invoice_date',  'dt' => 2 ), 
     array( 'db' => 'supplier_company',      'dt' => 3 ), 
     array( 'db' => 'invoice_hutang_jatuh_tempo',     'dt' => 4 ), 
-    array( 'db' => 'invoice_total',    'dt' => 5 )
+    array( 'db' => 'invoice_total',    'dt' => 5 ),
+    array( 'db' => 'invoice_kembali',    'dt' => 6 )
 ); 
 
 // Include SQL query processing class 
