@@ -3,8 +3,9 @@
   include '_nav.php';
   include '_sidebar.php'; 
 ?>
-<?php  
-  if ( $levelLogin !== "super admin") {
+<?php
+  $allowAccess = ['super admin', 'admin'];
+  if (!in_array($levelLogin, $allowAccess)) {
     echo "
       <script>
         document.location.href = 'bo';

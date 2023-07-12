@@ -2,7 +2,8 @@
   include '_header.php'; 
 ?>
 <?php  
-  if ( $levelLogin !== "super admin") {
+  $allowAccess = ['super admin', 'admin'];
+  if (!in_array($levelLogin, $allowAccess)) {
     echo "
       <script>
         document.location.href = 'bo';
